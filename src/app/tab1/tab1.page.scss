@@ -1,0 +1,21 @@
+ion-card {
+  margin-bottom: 14px;
+  border-radius: 12px;
+  --background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+ion-card-title {
+  font-weight: 700;
+}
+
+ion-item h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+ion-item p, ion-item small {
+  margin: 0;
+  color: #666;
+  font-size: 0.85rem;
+}

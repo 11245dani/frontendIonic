@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Calles y Vehículos</ion-title>
+    <ion-button slot="end" (click)="forceSyncCalles()" size="small">Sync Calles</ion-button>
+    <ion-button slot="end" (click)="forceSyncVehiculos()" size="small">Sync Vehículos</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- CALLes -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Calles</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngIf="loadingCalles">
+          <ion-label>Cargando calles...</ion-label>
+          <ion-spinner slot="end"></ion-spinner>
+        </ion-item>
+
+        <ion-item *ngFor="let calle of calles">
+          <ion-label>
+            <h3>{{ calle.nombre ?? calle.name ?? 'Sin nombre' }}</h3>
+            <p *ngIf="calle.barrio">Barrio: {{ calle.barrio }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="!loadingCalles && calles.length === 0">
+          <ion-label>No hay calles disponibles.</ion-label>
+        </ion-item>
+
+        <ion-infinite-scroll threshold="100px" (ionInfinite)="loadMoreCalles($event)">
+          <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más calles..."></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- VEHÍCULOS EXTERNOS -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Vehículos (API principal)</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngIf="loadingVehiculos">
+          <ion-label>Cargando vehículos...</ion-label>
+          <ion-spinner slot="end"></ion-spinner>
+        </ion-item>
+
+        <ion-item *ngFor="let v of vehiculosExternos">
+          <ion-label>
+            <h3>{{ v.placa ?? v.plate ?? 'Sin placa' }}</h3>
+            <p>{{ v.marca ?? v.brand ?? 'Sin marca' }} — {{ v.modelo ?? v.year ?? '' }}</p>
+            <small *ngIf="v.perfil_id">Perfil: {{ v.perfil_id }}</small>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="!loadingVehiculos && vehiculosExternos.length === 0">
+          <ion-label>No se encontraron vehículos en la API principal.</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

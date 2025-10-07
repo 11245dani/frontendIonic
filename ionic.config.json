@@ -1,0 +1,7 @@
+{
+  "name": "basurapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

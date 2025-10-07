@@ -1,0 +1,58 @@
+.login-content {
+--background: url('/assets/images/home-bg.png') no-repeat center center / cover;
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* oscurece la imagen para resaltar el formulario */
+  z-index: 1;
+}
+
+.login-card {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.2); /* transparencia */
+  backdrop-filter: blur(10px); /* difumina fondo detrás */
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+ion-card-title {
+  font-weight: 700;
+  color: #fff;
+}
+
+.transparent-input {
+  --background: transparent;
+  --highlight-color-focused: #8fd694;
+  --color: #fff;
+}
+
+.transparent-input ion-label {
+  color: #eaeaea !important;
+}
+
+.transparent-input ion-input {
+  color: #fff;
+}
+
+.btn-green {
+  --background: #8fd694;
+  --background-hover: #78c17f;
+  --color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: 0.3s;
+}

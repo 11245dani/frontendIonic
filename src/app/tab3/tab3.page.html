@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Perfil del Conductor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-card *ngIf="user">
+    <ion-card-header>
+      <ion-card-title>Datos del Usuario</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Nombre:</strong> {{ user.name }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="vehicle">
+    <ion-card-header>
+      <ion-card-title>Vehículo Asignado</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Placa:</strong> {{ vehicle.placa }}</p>
+      <p><strong>Marca:</strong> {{ vehicle.marca }}</p>
+      <p><strong>Modelo:</strong> {{ vehicle.modelo }}</p>
+      <p *ngIf="vehicle.capacidad"><strong>Capacidad:</strong> {{ vehicle.capacidad }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="!vehicle">
+    <ion-card-content>
+      <p>No hay vehículo asociado a este usuario.</p>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
