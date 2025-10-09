@@ -1,12 +1,12 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
-import { IonicStorageModule } from '@ionic/storage-angular';
+import { IonicStorageModule, Storage } from '@ionic/storage-angular';
+import { importProvidersFrom } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient } from '@angular/common/http';
-import { importProvidersFrom } from '@angular/core'; // 👈 necesario para módulos clásicos
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -14,13 +14,16 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideHttpClient(),
 
-    // ✅ forma clásica y estable de importar Ionic Storage
+    // ✅ Importación clásica del módulo de Storage
     importProvidersFrom(
       IonicStorageModule.forRoot({
         name: '__mydb',
         driverOrder: ['indexeddb', 'sqlite', 'websql']
       })
     ),
+
+    // ✅ Este provider explícito es el que evita el error NG0201
+    Storage,
 
     provideRouter(routes, withPreloading(PreloadAllModules)),
   ],
