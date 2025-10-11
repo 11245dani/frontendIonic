@@ -9,11 +9,10 @@ import {
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardContent
+  IonCardContent,
+  IonItemDivider
 } from '@ionic/angular/standalone';
-
 import { UserService } from '../services/user.service';
-import { VehicleService } from '../services/vehicle.service';
 
 @Component({
   selector: 'app-tab3',
@@ -29,22 +28,17 @@ import { VehicleService } from '../services/vehicle.service';
     IonCard,
     IonCardHeader,
     IonCardTitle,
-    IonCardContent
+    IonCardContent,
+    IonItemDivider
   ]
 })
 export class Tab3Page implements OnInit {
-
-  user: any;
-  vehicle: any;
+  user: any = null;
   token: string = '';
 
-  constructor(
-    private userService: UserService,
-    private vehicleService: VehicleService
-  ) {}
+  constructor(private userService: UserService) {}
 
   ngOnInit() {
-    // 🔹 Obtén el token guardado en el login
     this.token = localStorage.getItem('token') || '';
     if (this.token) {
       this.loadUserData();
@@ -54,30 +48,12 @@ export class Tab3Page implements OnInit {
   loadUserData() {
     this.userService.getUser(this.token).subscribe({
       next: (res) => {
+        console.log('Datos completos del usuario:', res);
         this.user = res;
-        console.log('Usuario:', this.user);
-
-        // 🚗 Opción 1: Consultar vehículo local
-        this.vehicleService.getVehiculoLocal(this.user.id, this.token).subscribe({
-          next: (veh) => {
-            console.log('Vehículo recibido desde API local:', veh); // 👈 AQUI
-            this.vehicle = veh.vehiculo;
-          },
-          error: (err) => console.error('Error vehículo local', err)
-        });
-
-        // 🚗 Opción 2: Consultar vehículo externo (API principal)
-        /*
-        this.vehicleService.getVehiculoExterno(this.user.perfil_id).subscribe({
-          next: (veh) => {
-            console.log('Vehículo recibido desde API externa:', veh); // 👈 Y AQUI SI USAS LA OTRA OPCIÓN
-            this.vehicle = veh;
-          },
-          error: (err) => console.error('Error vehículo externo', err)
-        });
-        */
       },
-      error: (err) => console.error('Error usuario', err)
+      error: (err) => {
+        console.error('Error al obtener usuario:', err);
+      }
     });
   }
 }

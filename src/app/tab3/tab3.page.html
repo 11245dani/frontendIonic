@@ -6,6 +6,7 @@
 
 <ion-content class="ion-padding">
 
+  <!-- Datos del usuario -->
   <ion-card *ngIf="user">
     <ion-card-header>
       <ion-card-title>Datos del Usuario</ion-card-title>
@@ -16,21 +17,27 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card *ngIf="vehicle">
+  <!-- Vehículos asociados -->
+  <ion-card *ngIf="user && user.vehiculos?.length">
     <ion-card-header>
-      <ion-card-title>Vehículo Asignado</ion-card-title>
+      <ion-card-title>Vehículos Asociados</ion-card-title>
     </ion-card-header>
+
     <ion-card-content>
-      <p><strong>Placa:</strong> {{ vehicle.placa }}</p>
-      <p><strong>Marca:</strong> {{ vehicle.marca }}</p>
-      <p><strong>Modelo:</strong> {{ vehicle.modelo }}</p>
-      <p *ngIf="vehicle.capacidad"><strong>Capacidad:</strong> {{ vehicle.capacidad }}</p>
+      <div *ngFor="let v of user.vehiculos; let i = index">
+        <p><strong>Placa:</strong> {{ v.placa }}</p>
+        <p><strong>Marca:</strong> {{ v.marca }}</p>
+        <p><strong>Modelo:</strong> {{ v.modelo }}</p>
+        <p><strong>Activo:</strong> {{ v.activo ? 'Sí' : 'No' }}</p>
+        <ion-item-divider></ion-item-divider>
+      </div>
     </ion-card-content>
   </ion-card>
 
-  <ion-card *ngIf="!vehicle">
+  <!-- Mensaje si no hay vehículos -->
+  <ion-card *ngIf="user && (!user.vehiculos || user.vehiculos.length === 0)">
     <ion-card-content>
-      <p>No hay vehículo asociado a este usuario.</p>
+      <p>No hay vehículos asociados a este usuario.</p>
     </ion-card-content>
   </ion-card>
 
