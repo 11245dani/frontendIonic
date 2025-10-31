@@ -1,0 +1,47 @@
+<ion-content class="login-content">
+  <div class="overlay"></div>
+
+  <ion-card class="login-card">
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Ingresa tus credenciales</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form (ngSubmit)="login()">
+        <ion-item class="transparent-input">
+          <ion-label position="floating">Correo electrónico</ion-label>
+          <ion-input
+            [(ngModel)]="email"
+            name="email"
+            type="email"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="transparent-input ion-margin-top">
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input
+            [(ngModel)]="password"
+            name="password"
+            type="password"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          class="btn-green ion-margin-top"
+          type="submit"
+          [disabled]="isLoading"
+        >
+          <ijmjnmjmnjvnnnnjnnjmnmnmjnnjmmjmnmnmjmnnmjmmjnjmjmnnjmnjnnnmjjmnnjnnmnjnjnjmnvmjnmjnjmnnjjmnmjnjmnjnmnmjjnjmjmnmjnjmjmnmmjnnmjmnjjmnmjnmjjmnmnjmmjmnjmnnjmjmnmmjmnmjjmnmjnmmjnmjmjnnmmnmjnmjnmnjnjmnmjjmnjmnnnnnnnvnnjnjnnnvnnjnnvvnnvnvnnvnjnnnjmnjjmjmjmjjmnjnmnjmnjjnnjmjnmjjmnmjnmmmmnjnjmjnjnjmnjnnjmnmmmjnnmjjmnjnmjnnjnjmnjmmjnnjmnjmnjmnnmjnmjnmjmnjmnnmjmnnnjnnjmmnnjmnjmnjmnmjmnjnjmmnjmon-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+          <span *ngIf="!isLoading">Iniciar Sesión</span>
+        </ion-button>
+
+        <ion-text color="danger" *ngIf="errorMessage">
+          <p class="ion-text-center ion-margin-top">{{ errorMessage }}</p>
+        </ion-text>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

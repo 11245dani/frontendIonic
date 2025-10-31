@@ -1,17 +1,41 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Mis recorridos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list *ngIf="recorridos.length > 0; else noRecorridos">
+    <ion-item *ngFor="let r of recorridos">
+      <ion-label>
+        <h2>
+          Recorrido iniciado en la ruta
+          <strong>{{ r.ruta?.nombre_ruta || 'Ruta desconocida' }}</strong>
+        </h2>
+        <p>
+          🕒 Inicio: {{ r.created_at | date: 'short' }}
+        </p>
+        <p *ngIf="r.updated_at">
+          ⏱ Fin: {{ r.updated_at | date: 'short' }}
+        </p>
+        <p *ngIf="!r.updated_at">
+          ⏳ En curso
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ng-template #noRecorridos>
+    <ion-text color="medium">
+      <p class="ion-padding">No tienes recorridos registrados.</p>
+    </ion-text>
+  </ng-template>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="full" color="secondary">
+      Iniciar nuevo recorrido
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

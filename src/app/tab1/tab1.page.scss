@@ -1,43 +1,70 @@
-#map {
-  height: 350px;
-  width: 100%;
-  border-radius: 10px;
-  margin-top: 16px;
-  z-index: 1;
+.pastel-background {
+  --background: #f7fff9;
 }
 
-.leaflet-container {
-  background: #252525;
+.map-container {
+  height: 55vh;
+  border-radius: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  border: 2px solid #a8f0c2;
+  margin-bottom: 20px;
 }
 
-ion-item h3 {
-  margin: 0;
-  font-size: 1rem;
+.pastel-card {
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 128, 0, 0.15);
+  border: 1px solid #a8f0c2;
 }
 
-ion-item p {
-  margin: 0;
-  color: #666;
-  font-size: 0.85rem;
+ion-card-title {
+  color: #2e7d32;
+  font-size: 1.2rem;
+  text-align: center;
+  font-weight: bold;
 }
 
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
+.pastel-button {
+  --background: #a8f0c2;
+  --color: #1b5e20;
+  --background-hover: #86e0a8;
+  --box-shadow: 0 2px 6px rgba(0, 128, 0, 0.3);
   margin-top: 10px;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
-.pagination-controls button {
-  --background: #3880ff;
-  --color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 1rem;
+/* Estilos del control personalizado en el mapa */
+.leaflet-control-custom {
+  background: white !important;
+  border-radius: 8px;
+  border: 1px solid #a8f0c2;
+  box-shadow: 0 2px 6px rgba(0, 128, 0, 0.2);
+  padding: 8px;
+  font-family: 'Inter', sans-serif;
+  color: #2e7d32;
 }
-.pagination-controls button:disabled {
-  --background: #ccc;
-  cursor: not-allowed;
+
+.leaflet-popup-content {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #2e7d32;
+}
+
+.leaflet-popup-content b {
+  color: #1b5e20;
+}
+
+
+/* =======================
+   RESPONSIVE
+   ======================= */
+@media (max-width: 768px) {
+  #map {
+    height: 55vh;
+  }
+
+  ion-toolbar ion-button {
+    font-size: 12px;
+  }
 }

@@ -9,9 +9,11 @@ export class DataService {
   private localBase = environment.miurlserve;
   private storageKeyCalles = 'cache_calles';
 
-  constructor(private storage: Storage) {
-    this.init();
-  }
+ constructor(private storage: Storage) {
+  this.init();
+  console.log('DataService init - externalBase:', this.externalBase);
+  console.log('DataService init - localBase:', this.localBase);
+}
 
   private async init() {
     const s = await this.storage.create();
@@ -41,6 +43,9 @@ export class DataService {
       if (page === 1) await this.storage.set(this.storageKeyCalles, payload.data ?? payload);
       return payload;
     }
+
+
+
   }
 
 

@@ -1,73 +1,25 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="end">
-      <ion-button (click)="forceSyncCalles()" size="small">Sync Calles</ion-button>
-      <ion-button (click)="forceSyncRutas()" size="small">Sync Rutas</ion-button>
-    </ion-buttons>
+  <ion-toolbar color="light">
+    <ion-title style="color:#2e7d32; font-weight:bold;">
+      🌿 Mapa de Calles y Rutas
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding pastel-background">
+  <div id="map" class="map-container"></div>
 
-  <ion-accordion-group expand="inset">
-    <!-- CALLES -->
-    <ion-accordion value="calles">
-      <ion-item slot="header" color="light">
-        <ion-label><strong>Calles disponibles</strong></ion-label>
-      </ion-item>
-      <div slot="content" class="ion-padding">
-        <ion-searchbar
-          placeholder="Buscar calle..."
-          [(ngModel)]="searchQuery"
-          (ionInput)="filterCalles($event)"
-          (ionClear)="clearSelection()"
-          debounce="300">
-        </ion-searchbar>
-        <ion-button expand="block" fill="outline" size="small" (click)="clearSelection()">Limpiar filtro</ion-button>
-
-        <ion-list *ngIf="!loadingCalles && paginatedCalles.length > 0">
-          <ion-item
-            *ngFor="let calle of paginatedCalles"
-            (click)="selectCalle(calle)"
-            [color]="selectedCalle?.id === calle.id ? 'primary' : ''"
-            button>
-            <ion-label>
-              <h3>{{ calle.nombre ?? calle.name ?? 'Sin nombre' }}</h3>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </div>
-    </ion-accordion>
-
-    <!-- RUTAS -->
-    <ion-accordion value="rutas">
-      <ion-item slot="header" color="light">
-        <ion-label><strong>Rutas registradas</strong></ion-label>
-      </ion-item>
-      <div slot="content" class="ion-padding">
-        <ion-searchbar
-          placeholder="Buscar ruta..."
-          [(ngModel)]="searchRuta"
-          (ionInput)="filterRutas($event)"
-          (ionClear)="clearRutaSelection()"
-          debounce="300">
-        </ion-searchbar>
-        <ion-button expand="block" fill="outline" size="small" (click)="clearRutaSelection()">Limpiar filtro</ion-button>
-
-        <ion-list *ngIf="!loadingRutas && paginatedRutas.length > 0">
-          <ion-item
-            *ngFor="let ruta of paginatedRutas"
-            (click)="selectRuta(ruta)"
-            [color]="selectedRuta?.id === ruta.id ? 'success' : ''"
-            button>
-            <ion-label>
-              <h3>{{ ruta.nombre_ruta ?? 'Sin nombre' }}</h3>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-      </div>
-    </ion-accordion>
-  </ion-accordion-group>
-
-  <div id="map"></div>
+  <ion-card class="pastel-card">
+    <ion-card-header>
+      <ion-card-title>Gestión de Recorridos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" color="success" class="pastel-button" (click)="iniciarRecorrido()">
+        🚀 Iniciar Recorrido
+      </ion-button>
+      <ion-button expand="block" color="danger" class="pastel-button" (click)="finalizarRecorrido()">
+        🏁 Finalizar Recorrido
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

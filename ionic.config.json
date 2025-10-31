@@ -1,7 +1,15 @@
 {
   "name": "basurapp",
+  "type": "angular",
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular-standalone"
+  "server": {
+    "proxy": {
+      "/api": {
+        "secure": false,
+        "changeOrigin": true
+      }
+    }
+  }
 }

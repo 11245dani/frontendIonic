@@ -80,6 +80,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "app:build:production"
@@ -93,12 +96,7 @@
           },
           "defaultConfiguration": "development"
         },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "app:build"
-          }
-        },
+
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {

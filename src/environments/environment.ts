@@ -5,9 +5,11 @@
 export const environment = {
   production: false,
   urlserverlucio: 'http://apirecoleccion.gonzaloandreslucio.com/api/',
-  miurlserve: 'http://127.0.0.1:8000/api',
+  miurlserve: '/api',
   perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da'
 };
+
+
 
 /*
  * For easier debugging in development mode, you can import the following file
