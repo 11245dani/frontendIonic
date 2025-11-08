@@ -5,21 +5,25 @@
     </ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content class="ion-padding pastel-background">
   <div id="map" class="map-container"></div>
-
   <ion-card class="pastel-card">
     <ion-card-header>
       <ion-card-title>Gestión de Recorridos</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-button expand="block" color="success" class="pastel-button" (click)="iniciarRecorrido()">
+      <ion-label *ngIf="selectedRuta">Ruta seleccionada: {{ selectedRuta.nombre_ruta ?? 'Sin nombre' }}</ion-label>
+      <ion-button expand="block" color="success" class="pastel-button" (click)="iniciarRecorrido()" [disabled]="recorridoActivo">
         🚀 Iniciar Recorrido
       </ion-button>
-      <ion-button expand="block" color="danger" class="pastel-button" (click)="finalizarRecorrido()">
+      <ion-button expand="block" color="danger" class="pastel-button" (click)="finalizarRecorrido()" [disabled]="!recorridoActivo">
         🏁 Finalizar Recorrido
       </ion-button>
+      <div *ngIf="recorridoActivo">
+        <ion-text color="medium">Progreso de la ruta</ion-text>
+        <ion-progress-bar [value]="routeProgress.percent / 100"></ion-progress-bar>
+        <ion-text color="medium">{{ routeProgress.percent }}% completado ({{ routeProgress.distanceMeters }} metros recorridos)</ion-text>
+      </div>
     </ion-card-content>
   </ion-card>
 </ion-content>
