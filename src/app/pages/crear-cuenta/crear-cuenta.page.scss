@@ -1,0 +1,190 @@
+/* Fondo blanco */
+.background-white {
+  --background: #ffffff !important;
+  color: #000 !important;
+}
+
+/* ✨ Animación de entrada */
+.fade-in {
+  animation: fadeInUp 0.8s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Forzar fondo blanco global */
+ion-content {
+  --background: #ffffff !important;
+}
+
+/* Tarjetas flotantes */
+ion-card.floating-card {
+  background: #ffffff !important;
+  --background: #ffffff !important;
+  --ion-item-background: #ffffff !important;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+  margin-bottom: 18px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  z-index: 0;
+}
+
+/* Efecto hover flotante (sin ocultar texto) */
+ion-card.floating-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+}
+
+/* Ítems blancos */
+ion-item {
+  --background: #ffffff !important;
+  --ion-item-background: #ffffff !important;
+  background: #ffffff !important;
+  color: #000 !important;
+  border-radius: 14px;
+}
+
+/* Inputs */
+ion-input,
+ion-select {
+  --background: #ffffff !important;
+  --color: #000 !important;
+  --placeholder-color: #999 !important;
+  font-size: 0.95rem;
+}
+
+/* Etiquetas */
+ion-label {
+  color: #000 !important;
+}
+
+/* Encabezado */
+.profile-header {
+  text-align: center;
+  margin-top: 70px;
+  margin-bottom: 35px;
+}
+
+.header-icon {
+  width: 70px;
+  margin-bottom: 15px;
+}
+
+.main-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #000;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: #333;
+  margin-top: 5px;
+}
+
+/* Flecha volver */
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover {
+  transform: scale(1.1);
+}
+
+.back-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Etiquetas de campo */
+.field-label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #000;
+  margin-left: 4px;
+  margin-bottom: 8px;
+}
+
+/* ✅ Iconos de campo en colores pastel */
+.field-icon {
+  width: 25px;
+  margin-right: 10px;
+  margin-left: 8px;
+}
+
+/* Ojo para mostrar/ocultar contraseña */
+.toggle-eye {
+  font-size: 1.4rem;
+  color: #60C557; /* verde pastel */
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+/* Botón principal (verde profesional) */
+.logout-button {
+  margin-top: 30px;
+  --background: linear-gradient(135deg, #60C557);
+  --border-radius: 14px;
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(92, 184, 92, 0.4);
+}
+
+.logout-button:hover {
+  --background: linear-gradient(135deg, #37a837);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(61, 166, 61, 0.45);
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.logout-text {
+  font-size: 1rem;
+}
+
+/* Texto “¿Ya tienes una cuenta?” */
+.ion-text-center p {
+  color: #000 !important;
+  font-size: 0.95rem;
+}
+
+.ion-text-center p ion-text {
+  color: #3cb93c !important; /* verde acento para "Inicia sesión" */
+  font-weight: 600;
+  text-decoration: underline;
+}

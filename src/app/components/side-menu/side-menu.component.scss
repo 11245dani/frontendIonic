@@ -1,38 +1,3 @@
-.pastel-background {
-  --background: #f7fff9;
-}
-
-/* === Forzar cabecera blanca total === */
-ion-header.custom-header,
-ion-header.custom-header ion-toolbar,
-ion-header.custom-header::part(background),
-ion-header.custom-header ion-toolbar::part(background) {
-  --background: #ffffff !important;
-  --ion-background-color: #ffffff !important;
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  box-shadow: none !important;
-  border: none !important;
-}
-
-/* === Centrar el título de la app === */
-.titulo-app {
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: #000 !important;
-  width: 100%;
-}
-
-/* === “Mapa” alineado a la izquierda y en negrita === */
-.titulo-mapa {
-  text-align: left;
-  font-weight: 700;
-  color: #000000;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
 /* === Botón del menú visible en negro === */
 ion-header.custom-header ion-menu-button {
   color: #000 !important;
@@ -184,62 +149,24 @@ ion-menu::part(backdrop) {
   background-color: rgba(89, 245, 128, 0.3);
 }
 
-
-
-/* === Map container === */
-.map-container {
-  height: 55vh;
-  border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-  border: 2px solid #a8f0c2;
-  margin-bottom: 20px;
+/* === Botón Cerrar sesión === */
+.logout-container {
+  padding: 20px;
+  margin-top: auto;
 }
 
-/* === Tarjetas pastel === */
-.pastel-card {
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 2px 8px rgba(0, 128, 0, 0.15);
-  border: 1px solid #a8f0c2;
+.logout-button {
+  --background: #e53935;
+  --color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  text-transform: none;
+  box-shadow: 0 3px 8px rgba(229, 57, 53, 0.3);
+  transition: all 0.2s ease;
 }
 
-ion-card-title {
-  color: #2e7d32;
-  font-size: 1.2rem;
-  text-align: center;
-  font-weight: bold;
-}
-
-/* === Botones pastel === */
-.pastel-button {
-  --background: #a8f0c2;
-  --color: #1b5e20;
-  --background-hover: #86e0a8;
-  --box-shadow: 0 2px 6px rgba(0, 128, 0, 0.3);
-  margin-top: 10px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-/* === Popup del mapa === */
-.leaflet-control-custom {
-  background: white !important;
-  border-radius: 8px;
-  border: 1px solid #a8f0c2;
-  box-shadow: 0 2px 6px rgba(0, 128, 0, 0.2);
-  padding: 8px;
-  font-family: 'Inter', sans-serif;
-  color: #2e7d32;
-}
-
-.leaflet-popup-content {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  color: #2e7d32;
-}
-
-.leaflet-popup-content b {
-  color: #1b5e20;
+.logout-button:hover {
+  --background: #c62828;
 }
 
 /* === Fondo del ion-list que contiene los items === */
@@ -282,74 +209,23 @@ ion-menu ion-item h2 {
   margin: 0;
 }
 
-/* === Tarjeta flotante para Gestión de Recorridos === */
-.floating-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Contenedor flexible para empujar el botón al fondo */
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-.floating-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+/* Lista de opciones ocupa el espacio disponible */
+.menu-options {
+  flex-grow: 1;
 }
 
-ion-card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #000000; /* Verde principal */
-  text-align: left;
-  margin-bottom: 8px;
+/* Contenedor del botón al fondo */
+.logout-container {
+  margin-top: auto;
+  padding: 20px;
 }
-
-/* === Botones de acción estilizados como Tab3 === */
-.action-button {
-  margin-top: 12px;
-  border-radius: 12px;
-  font-weight: 600;
-  height: 45px;
-  text-transform: none;
-  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.2);
-  transition: all 0.3s ease;
-}
-
-.start-button {
-  --background: linear-gradient(135deg, #b8f5b1, #5cb85c);
-  --color: #fff;
-}
-
-.start-button:hover {
-  --background: linear-gradient(135deg, #a3eaa1, #4caf50);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(46, 125, 50, 0.3);
-}
-
-.stop-button {
-  --background: linear-gradient(135deg, #f5b1b1, #e53935);
-  --color: #fff;
-}
-
-.stop-button:hover {
-  --background: linear-gradient(135deg, #f28a8a, #d32f2f);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(229, 57, 53, 0.3);
-}
-
-/* === Sección de progreso === */
-.progress-section {
-  margin-top: 15px;
-}
-
-.progress-section ion-text {
-  display: block;
-  margin-top: 6px;
-  font-size: 0.95rem;
-  color: #555;
-}
-
-
 
 
 /* === Responsive === */

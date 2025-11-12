@@ -1,0 +1,48 @@
+<!-- =============== MENÚ LATERAL =============== -->
+<ion-menu menuId="main-menu" [contentId]="contentId" type="overlay">
+  <ion-content class="menu-content">
+
+    <div class="menu-container">
+      <!-- === Perfil del usuario === -->
+      <div class="menu-profile">
+        <img src="assets/icon/modo-retrato.png" alt="Usuario" class="profile-img" />
+        <h2 class="user-name">{{ user?.name || 'Nombre Usuario' }}</h2>
+
+        <div class="user-info">
+          <img src="assets/icon/sobre.png" alt="Correo" class="info-icon" />
+          <span class="user-email">{{ user?.email || 'usuario@correo.com' }}</span>
+        </div>
+
+        <div class="user-info">
+          <img src="assets/icon/usuarios.png" alt="Rol" class="info-icon" />
+          <span class="user-role">{{ user?.role?.nombre || 'Rol del usuario' }}</span>
+        </div>
+      </div>
+
+      <!-- === Opciones del menú === -->
+      <ion-list class="menu-options">
+        <ion-item button (click)="navegarYcerrar('mapa')" class="menu-item">
+          <img src="assets/icon/marcador-de-mapa.png" class="option-icon" alt="Mapa" />
+          <h2>Mapa</h2>
+        </ion-item>
+
+        <ion-item button (click)="navegarYcerrar('recorridos')" class="menu-item">
+          <img src="assets/icon/viaje-en-coche.png" class="option-icon" alt="Recorridos" />
+          <h2>Mis Recorridos</h2>
+        </ion-item>
+
+        <ion-item button (click)="navegarYcerrar('perfil')" class="menu-item">
+          <img src="assets/icon/usuario-del-circulo.png" class="option-icon" alt="Perfil" />
+          <h2>Mi Perfil</h2>
+        </ion-item>
+      </ion-list>
+
+      <!-- === Botón de cerrar sesión (fijo abajo) === -->
+      <div class="logout-container">
+        <ion-button expand="block" class="logout-button" (click)="cerrarSesion()">
+          Cerrar sesión
+        </ion-button>
+      </div>
+    </div>
+  </ion-content>
+</ion-menu>

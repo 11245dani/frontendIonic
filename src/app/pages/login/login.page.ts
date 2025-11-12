@@ -28,29 +28,42 @@ export class LoginPage {
     private location: Location
   ) {}
 
-  async login() {
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.http
-      .post('http://127.0.0.1:8000/api/login', {
-        email: this.email,
-        password: this.password,
-      })
-      .subscribe({
-        next: (res: any) => {
-          console.log('Respuesta del login:', res);
-          this.isLoading = false;
-          localStorage.setItem('token', res.token);
-          this.router.navigate(['/tabs/tab1']);
-          console.log('Navegado a:', this.router.url);
-        },
-        error: (err) => {
-          this.isLoading = false;
-          this.errorMessage =
-            err.error?.message || 'Error al iniciar sesión';
-        },
-      });
-  }
+async login() {
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  this.http
+    .post('http://127.0.0.1:8000/api/login', {
+      email: this.email,
+      password: this.password,
+    })
+    .subscribe({
+      next: (res: any) => {
+        console.log('Respuesta del login:', res);
+        this.isLoading = false;
+
+        // Guardar token y usuario
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify(res.user));
+
+        // ✅ Verificar rol del usuario
+        const roleName = res.user.role?.nombre || res.user.rol?.nombre;
+
+        if (roleName === 'conductor') {
+          this.router.navigate(['/tabs/tab1']); // ruta del conductor
+        } else if (roleName === 'ciudadano') {
+          this.router.navigate(['/ciudadano-home']); // página principal del ciudadano
+        } else {
+          this.router.navigate(['/login']);
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Error al iniciar sesión';
+      },
+    });
+}
+
 
   goBack() {
     this.location.back();

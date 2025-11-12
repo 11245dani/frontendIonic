@@ -1,72 +1,260 @@
-// src/app/tab3/tab3.page.scss
-.profile-content {
-  --background: linear-gradient(to bottom right, #f3fdf6, #e9f9f1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.background-white {
+  --background: #ffffff;
+  color: #000;
 }
 
+/* === Forzar cabecera blanca total === */
+ion-header.custom-header,
+ion-header.custom-header ion-toolbar,
+ion-header.custom-header::part(background),
+ion-header.custom-header ion-toolbar::part(background) {
+  --background: #ffffff !important;
+  --ion-background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.custom-header ion-title {
+  color: #000 !important; /* letras negras */
+  font-weight: 700 !important; /* negrita */
+  font-size: 1.3rem;
+  text-align: center;
+  background: #ffffff;
+}
+
+
+
+/* Cabecera del perfil */
 .profile-header {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.background-img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 10, 10, 0.4);
-  z-index: 1;
-}
-
-.profile-info {
-  position: relative;
-  z-index: 2;
   text-align: center;
-  color: #fff;
-}
-
-.profile-avatar {
-  width: 90px;
-  height: 90px;
-  border: 3px solid #8fd694;
-  margin: 0 auto 10px;
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.vehicle-card {
   margin-top: 20px;
-  width: 90%;
-  max-width: 400px;
 }
 
-ion-card {
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(6px);
+.upload-icon {
+  width: 70px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.no-vehicle {
+.name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.email {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 4px 0 0 0;
+}
+
+/* Título de cada sección */
+.section-title {
+  text-align: left;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #000;
+  margin-top: 25px;
+  margin-bottom: 10px;
+}
+
+/* Cada tarjeta independiente */
+.floating-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Texto y colores internos */
+.label-gray {
+  color: #808080;
+  font-weight: 500;
+}
+
+ion-item {
+  --background: transparent;
+  color: #000;
+}
+
+ion-avatar img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Botón de cerrar sesión */
+.logout-button {
+  margin-top: 35px;
+  --background: linear-gradient(135deg, #f5b1c8, #e53935); /* verde pastel a rojo */
+  --border-radius: 14px;
+  color: #ffffff; /* texto blanco */
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  text-transform: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(92, 184, 92, 0.4); /* sombra verde suave */
+  border: none;
+}
+
+.logout-button:hover {
+  --background: linear-gradient(135deg, #f1666d, #dc143c); /* tono más vivo al pasar el mouse */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(61, 166, 61, 0.45);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(61, 166, 61, 0.3);
+}
+
+.logout-icon {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
+
+.logout-text {
+  font-size: 1rem;
+}
+
+
+/* ===== ALERTA DE CIERRE DE SESIÓN (para Android e iOS) ===== */
+.custom-logout-alert {
+  --background: #ffffff;
+  --backdrop-opacity: 0.4;
+  --max-width: 320px;
+  border-radius: 16px;
+  color: #000 !important;
   text-align: center;
 }
 
-.btn-green {
-  --background: #8fd694;
-  --background-hover: #78c17f;
-  --color: #fff;
+/* Encabezado */
+.alert-head.sc-ion-alert-md {
+  text-align: center;
+  color: #000 !important;
+  font-weight: 700;
+}
+
+/* Mensaje */
+.alert-message.sc-ion-alert-md {
+  color: #444;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+/* Botones generales */
+.alert-button-group.sc-ion-alert-md {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 8px;
+}
+
+/* Botón cancelar */
+.alert-button.cancel-button {
+  color: #777 !important;
+  font-weight: 600;
+  text-transform: none;
+}
+
+/* Botón confirmar */
+.alert-button.confirm-button {
+  background: linear-gradient(135deg, #b8f5b1, #5cb85c);
+  color: #fff !important;
   font-weight: 600;
   border-radius: 10px;
+  padding: 6px 16px;
+  text-transform: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.alert-button.confirm-button:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 6px rgba(61, 166, 61, 0.3);
+}
+
+/* === Tarjeta flotante para Gestión de Recorridos === */
+.floating-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+ion-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2e7d32; /* Verde principal */
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* === Botones de acción estilizados como Tab3 === */
+.action-button {
+  margin-top: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  height: 45px;
+  text-transform: none;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.2);
+  transition: all 0.3s ease;
+}
+
+.start-button {
+  --background: linear-gradient(135deg, #b8f5b1, #5cb85c);
+  --color: #fff;
+}
+
+.start-button:hover {
+  --background: linear-gradient(135deg, #a3eaa1, #4caf50);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(46, 125, 50, 0.3);
+}
+
+.stop-button {
+  --background: linear-gradient(135deg, #f5b1b1, #e53935);
+  --color: #fff;
+}
+
+.stop-button:hover {
+  --background: linear-gradient(135deg, #f28a8a, #d32f2f);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(229, 57, 53, 0.3);
+}
+
+/* === Sección de progreso === */
+.progress-section {
+  margin-top: 15px;
+}
+
+.progress-section ion-text {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+
+/* === Botón del menú visible en negro === */
+ion-header.custom-header ion-menu-button {
+  color: #000 !important;
+  --color: #000 !important;
 }

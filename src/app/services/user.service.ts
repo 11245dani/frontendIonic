@@ -18,4 +18,15 @@ export class UserService {
     });
     return this.http.get(`${this.apiUrl}/user`, { headers });
   }
+  /** ✅ Método que el componente Tab3 usa */
+  updatePhoto(token: string, base64Image: string): Observable<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    const body = { image: base64Image };
+
+    return this.http.post(`${this.apiUrl}/user/photo`, body, { headers });
+  }
 }

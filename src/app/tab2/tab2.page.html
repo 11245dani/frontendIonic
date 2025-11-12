@@ -1,41 +1,118 @@
-<ion-header>
+<ion-header class="custom-header">
   <ion-toolbar color="primary">
-    <ion-title>Mis recorridos</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mis Recorridos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-list *ngIf="recorridos.length > 0; else noRecorridos">
-    <ion-item *ngFor="let r of recorridos">
-      <ion-label>
-        <h2>
-          Recorrido iniciado en la ruta
-          <strong>{{ r.ruta?.nombre_ruta || 'Ruta desconocida' }}</strong>
-        </h2>
-        <p>
-          🕒 Inicio: {{ r.created_at | date: 'short' }}
+<!-- 🔍 Barra de búsqueda -->
+<ion-toolbar class="search-toolbar">
+  <ion-searchbar
+    [(ngModel)]="searchTerm"
+    placeholder="Buscar por nombre de ruta..."
+    show-clear-button="always"
+    (keyup.enter)="filtrarRecorridos()"
+    (ionClear)="filtrarRecorridos()"
+    (ionInput)="onInputChange($event)">
+  </ion-searchbar>
+</ion-toolbar>
+
+<!-- 🧭 FILTROS -->
+<div class="filtros-container">
+  <!-- 📅 Filtro de fecha -->
+  <div class="filtro-item" (click)="abrirCalendario()">
+    <img src="assets/icon/calendario.png" alt="Fecha" class="filtro-icono">
+    <span class="filtro-texto">{{ filtroFecha || 'Fecha' }}</span>
+    <ion-icon *ngIf="filtroFecha" name="close-circle-outline" class="filtro-clear" (click)="limpiarFiltro($event, 'fecha')"></ion-icon>
+    <ion-icon name="chevron-down-outline" class="filtro-flecha"></ion-icon>
+  </div>
+
+  <!-- ⏰ Filtro de hora -->
+  <div class="filtro-item" (click)="abrirHora()">
+    <img src="assets/icon/reloj-tres.png" alt="Hora" class="filtro-icono">
+    <span class="filtro-texto">{{ filtroHora || 'Hora' }}</span>
+    <ion-icon *ngIf="filtroHora" name="close-circle-outline" class="filtro-clear" (click)="limpiarFiltro($event, 'hora')"></ion-icon>
+    <ion-icon name="chevron-down-outline" class="filtro-flecha"></ion-icon>
+  </div>
+
+  <!-- 🗓️ Filtro de día -->
+  <div class="filtro-item" (click)="abrirDia()">
+    <img src="assets/icon/dia-del-calendario.png" alt="Día" class="filtro-icono">
+    <span class="filtro-texto">{{ filtroDia || 'Día' }}</span>
+    <ion-icon *ngIf="filtroDia" name="close-circle-outline" class="filtro-clear" (click)="limpiarFiltro($event, 'dia')"></ion-icon>
+    <ion-icon name="chevron-down-outline" class="filtro-flecha"></ion-icon>
+  </div>
+</div>
+
+<ion-content id="main-content-tab2" class="ion-padding">
+  <ion-list *ngIf="recorridosFiltrados.length > 0; else noRecorridos">
+    <div *ngFor="let r of recorridosFiltrados" class="recorrido-card">
+      <!-- 🔝 Cabecera del recorrido -->
+      <div class="recorrido-header">
+        <div class="recorrido-info">
+          <h2 class="recorrido-nombre">
+            {{ r.ruta?.nombre || 'Ruta desconocida' }}
+          </h2>
+          <p class="recorrido-usuario">
+            {{ r.usuario?.rol }} : {{ r.usuario?.nombre }}
+          </p>
+        </div>
+
+        <div class="recorrido-estado">
+          <img
+            *ngIf="r.estado === 'finalizado'"
+            src="assets/icon/progreso-completo.png"
+            alt="Completado"
+            class="estado-icono"
+          />
+          <img
+            *ngIf="r.estado === 'en_curso'"
+            src="assets/icon/pin-de-ubicacion-de-carga-del-vehiculo.png"
+            alt="En curso"
+            class="estado-icono"
+          />
+          <span
+            class="estado-texto"
+            [ngClass]="{
+              'estado-finalizado': r.estado === 'finalizado',
+              'estado-en-curso': r.estado === 'en_curso'
+            }"
+          >
+            {{ r.estado }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Línea divisoria -->
+      <div class="linea-divisoria"></div>
+
+      <!-- 📅 Fechas -->
+      <div class="recorrido-fechas">
+        <p class="fecha-texto">Inicio: {{ r.created_at | date: 'short' }}</p>
+        <p *ngIf="r.updated_at" class="fecha-texto">
+          Finalización: {{ r.updated_at | date: 'short' }}
         </p>
-        <p *ngIf="r.updated_at">
-          ⏱ Fin: {{ r.updated_at | date: 'short' }}
+        <p *ngIf="!r.updated_at" class="fecha-texto">
+          En curso...
         </p>
-        <p *ngIf="!r.updated_at">
-          ⏳ En curso
-        </p>
-      </ion-label>
-    </ion-item>
+      </div>
+    </div>
   </ion-list>
 
   <ng-template #noRecorridos>
-    <ion-text color="medium">
-      <p class="ion-padding">No tienes recorridos registrados.</p>
-    </ion-text>
+    <div class="no-resultados-container">
+      <img
+        src="assets/icon/busqueda-alternativa.png"
+        alt="Sin resultados"
+        class="no-resultados-img"
+      />
+      <h2 class="no-resultados-titulo">No se encontraron rutas</h2>
+      <p class="no-resultados-texto">
+        Ajusta los filtros o realiza tu primer recorrido para ver el historial aquí.
+      </p>
+    </div>
   </ng-template>
 </ion-content>
 
-<ion-footer>
-  <ion-toolbar>
-    <ion-button expand="full" color="secondary">
-      Iniciar nuevo recorrido
-    </ion-button>
-  </ion-toolbar>
-</ion-footer>

@@ -1,29 +1,46 @@
-<ion-header>
-  <ion-toolbar color="light">
-    <ion-title style="color:#2e7d32; font-weight:bold;">
-      🌿 Mapa de Calles y Rutas
-    </ion-title>
+
+<!-- ✅ Contenido principal -->
+<ion-header class="custom-header" id="main-content">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title class="titulo-app">Ecoruta BMA</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding pastel-background">
+
+<ion-content class="ion-padding pastel-background" id="main-content">
+  <h2 class="titulo-mapa">Mapa</h2>
+
   <div id="map" class="map-container"></div>
-  <ion-card class="pastel-card">
-    <ion-card-header>
-      <ion-card-title>Gestión de Recorridos</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-label *ngIf="selectedRuta">Ruta seleccionada: {{ selectedRuta.nombre_ruta ?? 'Sin nombre' }}</ion-label>
-      <ion-button expand="block" color="success" class="pastel-button" (click)="iniciarRecorrido()" [disabled]="recorridoActivo">
-        🚀 Iniciar Recorrido
-      </ion-button>
-      <ion-button expand="block" color="danger" class="pastel-button" (click)="finalizarRecorrido()" [disabled]="!recorridoActivo">
-        🏁 Finalizar Recorrido
-      </ion-button>
-      <div *ngIf="recorridoActivo">
-        <ion-text color="medium">Progreso de la ruta</ion-text>
-        <ion-progress-bar [value]="routeProgress.percent / 100"></ion-progress-bar>
-        <ion-text color="medium">{{ routeProgress.percent }}% completado ({{ routeProgress.distanceMeters }} metros recorridos)</ion-text>
-      </div>
-    </ion-card-content>
-  </ion-card>
+
+<ion-card class="floating-card">
+  <ion-card-header>
+    <ion-card-title>Gestión de Recorridos</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-label *ngIf="selectedRuta" class="label-gray">
+      Ruta seleccionada: {{ selectedRuta.nombre_ruta ?? 'Sin nombre' }}
+    </ion-label>
+
+    <ion-button expand="block" class="action-button start-button"
+      (click)="iniciarRecorrido()" [disabled]="recorridoActivo">
+      Iniciar Recorrido
+    </ion-button>
+
+    <ion-button expand="block" class="action-button stop-button"
+      (click)="finalizarRecorrido()" [disabled]="!recorridoActivo">
+      Finalizar Recorrido
+    </ion-button>
+
+    <div *ngIf="recorridoActivo" class="progress-section">
+      <ion-text color="medium">Progreso de la ruta</ion-text>
+      <ion-progress-bar [value]="routeProgress.percent / 100" color="success"></ion-progress-bar>
+      <ion-text color="medium">
+        {{ routeProgress.percent }}% completado ({{ routeProgress.distanceMeters }} metros recorridos)
+      </ion-text>
+    </div>
+  </ion-card-content>
+</ion-card>
+
 </ion-content>

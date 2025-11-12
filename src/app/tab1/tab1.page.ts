@@ -2,13 +2,35 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-rotatedmarker'; // Asegúrate de instalar leaflet-rotatedmarker via npm
 import { CommonModule } from '@angular/common';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonCardHeader, IonCardTitle, IonCardContent, IonCard, IonProgressBar, IonText, IonLabel } from '@ionic/angular/standalone';
+import { IonItem, 
+  IonIcon,
+  IonMenuButton,
+  IonList,
+  IonApp,
+  IonMenu,
+  IonHeader,
+  IonToolbar,
+  IonTitle, 
+  IonContent, 
+  IonButton, 
+  IonCardHeader, 
+  IonCardTitle, 
+  IonCardContent, 
+  IonCard, 
+  IonProgressBar,
+  IonButtons, 
+  IonText, 
+  IonLabel } from '@ionic/angular/standalone';
+import { MenuController } from '@ionic/angular';
 import { DataService } from '../services/data.service';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { environment } from 'src/environments/environment';
 import { Geolocation } from '@capacitor/geolocation';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { UserService } from '../services/user.service';
+import { Router } from '@angular/router';
+import { SideMenuComponent } from '../components/side-menu/side-menu.component'; // ajusta la ruta
+
 // Augment Leaflet types to include rotation properties
 declare module 'leaflet' {
 interface MarkerOptions {
@@ -25,8 +47,10 @@ selector: 'app-tab1',
 templateUrl: './tab1.page.html',
 styleUrls: ['./tab1.page.scss'],
 standalone: true,
-imports: [
+  imports: [
 CommonModule,
+IonMenuButton,
+IonButtons,
 IonHeader,
 IonToolbar,
 IonTitle,
@@ -38,7 +62,13 @@ IonCardTitle,
 IonCardContent,
 IonProgressBar,
 IonText,
-IonLabel
+IonLabel,
+IonApp,
+IonMenu,
+IonList,
+IonItem,
+IonIcon,
+SideMenuComponent
   ]
 })
 export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
@@ -82,13 +112,15 @@ private readonly MAX_SPEED_MS = 50; // Velocidad máxima esperada en m/s (~180 k
 private readonly isWeb = Capacitor.getPlatform() === 'web';
 // usuario cargado (para tomar vehículo)
 public user: any = null;
-constructor(private dataService: DataService, private userService: UserService) {}
+  alertController: any;
+constructor(private dataService: DataService, private menuCtrl: MenuController, private userService: UserService, private router: Router) {}
 ngOnInit(): void {
 this.loadCalles();
 this.loadRutas();
 this.loadUser(); // <-- cargamos usuario para obtener vehículo asignado
 this.syncInterval = setInterval(() => this.syncData(), 5 * 60 * 1000);
   }
+  
 ngAfterViewInit(): void {}
 ngOnDestroy(): void {
 if (this.syncInterval) clearInterval(this.syncInterval);
@@ -97,6 +129,7 @@ this.stopRouteTracking();
 // limpiar también el watch de showCurrentPosition
 this.clearWatchGeneric(this.watchId);
   }
+
 ionViewDidEnter() {
 if (this.map) {
 this.map.invalidateSize();
@@ -108,6 +141,9 @@ this.showCurrentPosition();
       });
     }
   }
+
+
+
 private async initMap(): Promise<void> {
 return new Promise((resolve) => {
 setTimeout(() => {
@@ -495,61 +531,95 @@ this.mostrarRutas = !this.mostrarRutas;
 this.mostrarRutas ? this.map.addLayer(this.rutasLayer) : this.map.removeLayer(this.rutasLayer);
   }
 // =================== RECORRIDOS ===================
-async iniciarRecorrido() {
-// ✅ Debe haber una ruta seleccionada
-if (!this.selectedRuta) return alert('Seleccione una ruta para iniciar');
-const token = localStorage.getItem('token');
-if (!token) return alert('No hay token de sesión');
-const vehiculoId = this.getAssignedVehicleId();
-if (!vehiculoId) {
-// si no tenemos vehículo asignado, avisamos y no iniciamos
-return alert('No se encontró ningún vehículo asignado al usuario. Configure un vehículo antes de iniciar el recorrido.');
+
+async mostrarNotificacion(titulo: string, mensaje: string) {
+  const plataforma = Capacitor.getPlatform();
+
+  if (plataforma === 'web') {
+    // ⚠️ Modo desarrollo en navegador
+    if (window.location.hostname === 'localhost') {
+      console.log(`[DESARROLLO] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
+      alert(`${titulo}: ${mensaje}`); // opcional solo mientras desarrollas
+    } else {
+      // Web en producción (sin alert)
+      console.log(`[WEB] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
     }
-const body = {
-      ruta_id: this.selectedRuta.api_id, // ✅ usa la seleccionada
-      vehiculo_id: vehiculoId,
-      perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da',
-    };
-const baseUrl = environment.miurlserve;
-try {
-      console.log('🚀 Iniciando recorrido en:', `${baseUrl}/recorridos/iniciar`);
-      console.log('🕵️ selectedRuta actual:', this.selectedRuta);
-let response: any;
-      console.log('🌐 Base URL usada:', baseUrl);
-if (Capacitor.getPlatform() === 'web') {
-        console.log('🌍 URL final usada para iniciar:', `${baseUrl}/recorridos/iniciar`);
-        console.log('📦 Body enviado:', body);
-const res = await fetch('/api/recorridos/iniciar', {
-          method: 'POST',
-          headers: {
-'Content-Type': 'application/json',
-'Accept': 'application/json', // 👈 este es importante
-'Authorization': 'Bearer ' + localStorage.getItem('token')
-          },
-          body: JSON.stringify(body),
-          credentials: 'include'
-        });
-        response = await res.json();
-      } else {
-const res = await CapacitorHttp.post({
-          url: `${baseUrl}/recorridos/iniciar`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-'Content-Type': 'application/json',
-          },
-          data: body,
-        });
-        response = res.data;
-      }
-this.recorridoActivo = response.recorrido;
-      console.log('✅ Recorrido iniciado correctamente:', response);
-alert('Recorrido iniciado');
-this.iniciarEnvioPosiciones();
-this.startRouteTracking();
+  } else if (plataforma === 'android' || plataforma === 'ios') {
+    // ⚡ Dispositivo móvil real
+    try {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: titulo,
+            body: mensaje,
+            id: new Date().getTime(), // ID único
+          }
+        ]
+      });
     } catch (err) {
-      console.error('❌ Error al iniciar recorrido:', err);
+      console.error('❌ Error al mostrar notificación nativa:', err);
     }
+  } else {
+    // Otros casos (fallback)
+    console.log(`[FALLBACK] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
   }
+}
+
+
+
+
+async iniciarRecorrido() {
+  if (!this.selectedRuta) return this.mostrarNotificacion('Atención', 'Seleccione una ruta para iniciar');
+  const token = localStorage.getItem('token');
+  if (!token) return this.mostrarNotificacion('Error', 'No hay token de sesión');
+
+  const vehiculoId = this.getAssignedVehicleId();
+  if (!vehiculoId) {
+    return this.mostrarNotificacion('Error', 'No se encontró ningún vehículo asignado al usuario. Configure un vehículo antes de iniciar el recorrido.');
+  }
+
+  const body = {
+    ruta_id: this.selectedRuta.api_id,
+    vehiculo_id: vehiculoId,
+    perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da',
+  };
+  const baseUrl = environment.miurlserve;
+
+  try {
+    let response: any;
+
+    if (Capacitor.getPlatform() === 'web') {
+      const res = await fetch('/api/recorridos/iniciar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(body),
+        credentials: 'include'
+      });
+      response = await res.json();
+    } else {
+      const res = await CapacitorHttp.post({
+        url: `${baseUrl}/recorridos/iniciar`,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        data: body,
+      });
+      response = res.data;
+    }
+
+    this.recorridoActivo = response.recorrido;
+    await this.mostrarNotificacion('Éxito', 'Recorrido iniciado');
+    this.iniciarEnvioPosiciones();
+    this.startRouteTracking();
+
+  } catch (err) {
+    console.error('❌ Error al iniciar recorrido:', err);
+    this.mostrarNotificacion('Error', 'No se pudo iniciar el recorrido');
+  }
+}
+
 iniciarEnvioPosiciones() {
 if (!this.recorridoActivo) return;
 this.intervalo = setInterval(() => this.enviarPosicion(), 10000);
@@ -580,31 +650,35 @@ const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/posici
     }
   }
 async finalizarRecorrido() {
-if (!this.recorridoActivo) return alert('No hay recorrido activo');
-const token = localStorage.getItem('token');
-const body = { recorrido_id: this.recorridoActivo.id };
-const baseUrl = environment.miurlserve;
-try {
-let response: any;
-const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/finalizar`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-      response = await res.json();
-      console.log('✅ Recorrido finalizado:', response);
-alert('Recorrido finalizado correctamente');
-clearInterval(this.intervalo);
-this.recorridoActivo = null;
-this.stopRouteTracking();
-this.clearSelection(); // Limpiar selección y cerrar popup al finalizar
-    } catch (err) {
-      console.error('❌ Error al finalizar recorrido:', err);
-    }
+  if (!this.recorridoActivo) return this.mostrarNotificacion('Atención', 'No hay recorrido activo');
+
+  const token = localStorage.getItem('token');
+  const body = { recorrido_id: this.recorridoActivo.id };
+  const baseUrl = environment.miurlserve;
+
+  try {
+    const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/finalizar`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const response = await res.json();
+    console.log('✅ Recorrido finalizado:', response);
+
+    await this.mostrarNotificacion('Éxito', 'Recorrido finalizado correctamente');
+
+    clearInterval(this.intervalo);
+    this.recorridoActivo = null;
+    this.stopRouteTracking();
+    this.clearSelection();
+
+  } catch (err) {
+    console.error('❌ Error al finalizar recorrido:', err);
+    this.mostrarNotificacion('Error', 'No se pudo finalizar el recorrido');
   }
+}
+
 // --- ADICION: utilidades matemáticas (haversine y proyección)
 //
 // devuelve distancia entre 2 puntos lat/lon en metros
@@ -887,9 +961,7 @@ this.heading = 0;
 this.lastPosition = null;
 this.lastUpdateTime = 0;
   }
-// -----------------------
-// NUEVAS FUNCIONES: manejo de usuario/vehículo
-// -----------------------
+
 private loadUser() {
 const token = localStorage.getItem('token') || '';
 if (!token) return;
@@ -915,34 +987,38 @@ if (raw) this.user = JSON.parse(raw);
       }
     });
   }
-/**
-   * Intenta obtener el vehiculo asignado al usuario en varias fuentes.
-   * Orden:
-   * - this.user.vehiculo.api_id || this.user.vehiculo.id
-   * - this.user.vehiculo_id
-   * - localStorage.getItem('vehiculo_id')
-   * - fallback hardcodeado (se usa como último recurso)
-   */
+
 private getAssignedVehicleId(): string | null {
-try {
-// primer intento: objeto vehiculo dentro de user (posible estructura: user.vehiculo.api_id)
-if (this.user) {
-if (this.user.vehiculo) {
-// puede tener api_id o id
-if (this.user.vehiculo.api_id) return this.user.vehiculo.api_id;
-if (this.user.vehiculo.id) return this.user.vehiculo.id;
-        }
-if (this.user.vehiculo_id) return this.user.vehiculo_id;
-      }
-// segundo intento: localStorage
-const fromLs = localStorage.getItem('vehiculo_id');
-if (fromLs) return fromLs;
-    } catch (e) {
-console.warn('getAssignedVehicleId error:', e);
+  try {
+    // 🚗 1️⃣ Primer intento: si el usuario tiene un array de vehículos
+    if (this.user && Array.isArray(this.user.vehiculos) && this.user.vehiculos.length > 0) {
+      const vehiculo = this.user.vehiculos[0]; // puedes ajustar si quieres otro índice
+      if (vehiculo.api_id) return vehiculo.api_id;
+      if (vehiculo.id) return vehiculo.id;
     }
-// fallback: mantener tu id hardcodeado para compatibilidad (pero avisamos)
-const fallback = '0199d01b-d17c-736f-9ab7-4a045d22cb94';
-console.warn('No se encontró vehiculo asignado; usando fallback hardcodeado. Recomendado: asignar vehiculo al usuario o guardar vehiculo_id en localStorage.');
-return fallback;
+
+    // 🚗 2️⃣ Si el usuario tiene un único vehículo directo
+    if (this.user?.vehiculo) {
+      if (this.user.vehiculo.api_id) return this.user.vehiculo.api_id;
+      if (this.user.vehiculo.id) return this.user.vehiculo.id;
+    }
+
+    // 🚗 3️⃣ Si el usuario tiene un campo vehiculo_id directo
+    if (this.user?.vehiculo_id) return this.user.vehiculo_id;
+
+    // 🚗 4️⃣ Revisar localStorage
+    const fromLs = localStorage.getItem('vehiculo_id');
+    if (fromLs) return fromLs;
+
+  } catch (e) {
+    console.warn('⚠️ getAssignedVehicleId error:', e);
   }
+
+  // 🚨 Fallback final
+  const fallback = '0199d01b-d17c-736f-9ab7-4a045d22cb94';
+  console.warn('⚠️ No se encontró vehículo asignado; usando fallback hardcodeado.');
+  return fallback;
+}
+
+
 }

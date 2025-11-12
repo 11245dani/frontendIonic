@@ -2,11 +2,13 @@
   <button class="back-button" routerLink="/home">
     <img src="/assets/icon/flecha-circulo-izquierda.png" alt="Back" class="back-icon" />
   </button>
+
   <ion-grid class="login-grid">
     <ion-row class="ion-justify-content-center">
       <ion-col size="12">
         <img src="/assets/icon/recycling-truck_17013849.png" class="logo" alt="Recycle Icon" />
         <h1 class="title">¡Bienvenido de nuevo!</h1>
+
         <ion-item lines="full">
           <ion-label position="stacked">Correo Electrónico</ion-label>
           <ion-input
@@ -17,6 +19,7 @@
             required
           ></ion-input>
         </ion-item>
+
         <ion-item lines="full">
           <ion-label position="stacked">Contraseña</ion-label>
           <ion-input
@@ -28,7 +31,9 @@
           ></ion-input>
           <ion-icon name="eye-outline" slot="end"></ion-icon>
         </ion-item>
+
         <p class="forgot-password">¿Olvidaste tu contraseña?</p>
+
         <ion-button
           expand="block"
           class="btn-green"
@@ -38,7 +43,13 @@
           <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
           <span *ngIf="!isLoading">Iniciar Sesión</span>
         </ion-button>
-        <p class="sign-up">¿No tienes una cuenta? <span>Crear cuenta</span></p>
+
+        <!-- 🔹 Enlace clicable a /crear-cuenta -->
+        <p class="sign-up">
+          ¿No tienes una cuenta?
+          <span class="link-crear-cuenta" routerLink="/crear-cuenta">Crear cuenta</span>
+        </p>
+
         <ion-text color="danger" *ngIf="errorMessage">
           <p class="ion-text-center ion-margin-top">{{ errorMessage }}</p>
         </ion-text>

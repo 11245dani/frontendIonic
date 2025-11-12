@@ -113,7 +113,15 @@ ion-input {
   text-align: center;
 }
 
-.sign-up span {
-  color: #3498db;
+
+
+.link-crear-cuenta {
+  color: #4caf50; /* verde agradable */
+  font-weight: 600;
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.link-crear-cuenta:hover {
+  color: #2e7d32; /* tono más oscuro al pasar el dedo o cursor */
 }

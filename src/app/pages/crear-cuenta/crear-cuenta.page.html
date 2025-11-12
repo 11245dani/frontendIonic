@@ -1,0 +1,121 @@
+<ion-content class="ion-padding background-white fade-in">
+
+  <!-- Botón regresar -->
+  <button class="back-button" routerLink="/home">
+    <img src="/assets/icon/flecha-circulo-izquierda.png" alt="Regresar" class="back-icon" />
+  </button>
+
+  <!-- Encabezado -->
+  <div class="profile-header fade-in">
+    <img src="/assets/icon/usuario-del-circulo.png" alt="Usuario" class="header-icon" />
+    <h2 class="main-title">Crear Cuenta</h2>
+    <p class="subtitle">Ayúdanos a mantener una Buenaventura limpia</p>
+  </div>
+
+  <!-- Formulario de registro -->
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="fade-in">
+
+    <!-- Nombre -->
+    <div class="field-label">Nombre</div>
+    <ion-card class="floating-card">
+      <ion-item lines="none">
+        <img src="assets/icon/usuario-del-circulo.png" alt="icono nombre" class="field-icon" />
+        <ion-input
+          formControlName="name"
+          placeholder="Ingresa tu nombre completo"
+          class="input-field"
+        ></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <!-- Correo -->
+    <div class="field-label">Correo Electrónico</div>
+    <ion-card class="floating-card">
+      <ion-item lines="none">
+        <img src="assets/icon/sobre.png" alt="icono correo" class="field-icon" />
+        <ion-input
+          formControlName="email"
+          type="email"
+          placeholder="Ingresa tu correo electrónico"
+          class="input-field"
+        ></ion-input>
+      </ion-item>
+    </ion-card>
+
+    <!-- Contraseña -->
+    <div class="field-label">Contraseña</div>
+    <ion-card class="floating-card">
+      <ion-item lines="none">
+        <img src="assets/icon/cerrar.png" alt="icono contraseña" class="field-icon" />
+        <ion-input
+          formControlName="password"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Ingresa tu contraseña"
+          class="input-field"
+        ></ion-input>
+        <ion-icon
+          [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+          slot="end"
+          class="toggle-eye"
+          (click)="togglePasswordVisibility()"
+        ></ion-icon>
+      </ion-item>
+    </ion-card>
+
+    <!-- Confirmar contraseña -->
+    <div class="field-label">Confirmar Contraseña</div>
+    <ion-card class="floating-card">
+      <ion-item lines="none">
+        <img src="assets/icon/cerrar.png" alt="icono confirmar" class="field-icon" />
+        <ion-input
+          formControlName="password_confirmation"
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          placeholder="Repite tu contraseña"
+          class="input-field"
+        ></ion-input>
+        <ion-icon
+          [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
+          slot="end"
+          class="toggle-eye"
+          (click)="toggleConfirmPasswordVisibility()"
+        ></ion-icon>
+      </ion-item>
+    </ion-card>
+
+    <!-- Rol -->
+    <div class="field-label">Rol</div>
+    <ion-card class="floating-card">
+      <ion-item lines="none">
+        <img src="assets/icon/usuarios.png" alt="icono rol" class="field-icon" />
+        <ion-select
+          formControlName="rol"
+          interface="popover"
+          placeholder="Selecciona tu rol"
+          class="input-field"
+        >
+          <ion-select-option value="ciudadano">Ciudadano</ion-select-option>
+          <ion-select-option value="conductor">Conductor</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card>
+
+    <!-- Botón crear cuenta -->
+    <ion-button
+      expand="block"
+      type="submit"
+      class="logout-button"
+      [disabled]="registerForm.invalid || loading"
+    >
+      <span class="logout-text">
+        {{ loading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+      </span>
+    </ion-button>
+
+    <div class="ion-text-center ion-margin-top">
+      <p>
+        ¿Ya tienes una cuenta?
+        <ion-text color="primary" routerLink="/login">Inicia sesión</ion-text>
+      </p>
+    </div>
+  </form>
+</ion-content>

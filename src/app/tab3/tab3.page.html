@@ -1,44 +1,145 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Perfil del Conductor</ion-title>
+
+
+<ion-header class="custom-header">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
 
-  <!-- Datos del usuario -->
-  <ion-card *ngIf="user">
-    <ion-card-header>
-      <ion-card-title>Datos del Usuario</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Nombre:</strong> {{ user.name }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-    </ion-card-content>
+
+<ion-content class="ion-padding background-white">
+
+  <!-- FOTO DE PERFIL -->
+  <div class="profile-header" *ngIf="user">
+    <img
+      src="assets/icon/modo-retrato.png"
+      alt="Subir foto"
+      class="upload-icon"
+      (click)="uploadPhoto()"
+    />
+    <ion-label>
+      <p class="name">{{ user.name }}</p>
+      <p class="email">{{ user.email }}</p>
+    </ion-label>
+  </div>
+
+  <!-- INFORMACIÓN PERSONAL -->
+  <div class="section-title">Información Personal</div>
+
+  <!-- Nombre -->
+  <ion-card *ngIf="user" class="floating-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img src="assets/icon/usuario-del-circulo.png" alt="icono usuario" />
+      </ion-avatar>
+      <ion-label>
+        <h3 class="label-gray">Nombre Completo</h3>
+        <p>{{ user.name }}</p>
+      </ion-label>
+    </ion-item>
   </ion-card>
 
-  <!-- Vehículos asociados -->
-  <ion-card *ngIf="user && user.vehiculos?.length">
-    <ion-card-header>
-      <ion-card-title>Vehículos Asociados</ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <div *ngFor="let v of user.vehiculos; let i = index">
-        <p><strong>Placa:</strong> {{ v.placa }}</p>
-        <p><strong>Marca:</strong> {{ v.marca }}</p>
-        <p><strong>Modelo:</strong> {{ v.modelo }}</p>
-        <p><strong>Activo:</strong> {{ v.activo ? 'Sí' : 'No' }}</p>
-        <ion-item-divider></ion-item-divider>
-      </div>
-    </ion-card-content>
+  <!-- Correo -->
+  <ion-card *ngIf="user" class="floating-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img src="assets/icon/sobre.png" alt="icono correo" />
+      </ion-avatar>
+      <ion-label>
+        <h3 class="label-gray">Correo Electrónico</h3>
+        <p>{{ user.email }}</p>
+      </ion-label>
+    </ion-item>
   </ion-card>
 
-  <!-- Mensaje si no hay vehículos -->
-  <ion-card *ngIf="user && (!user.vehiculos || user.vehiculos.length === 0)">
-    <ion-card-content>
-      <p>No hay vehículos asociados a este usuario.</p>
-    </ion-card-content>
+  <!-- Rol -->
+  <ion-card *ngIf="user && user.role" class="floating-card">
+    <ion-item lines="none">
+      <ion-avatar slot="start">
+        <img src="assets/icon/usuarios.png" alt="icono rol" />
+      </ion-avatar>
+      <ion-label>
+        <h3 class="label-gray">Rol</h3>
+        <p>{{ user.role.nombre }}</p>
+      </ion-label>
+    </ion-item>
   </ion-card>
+
+  <!-- VEHÍCULO -->
+  <div class="section-title">Vehículo</div>
+
+  <!-- Si hay vehículos -->
+  <ng-container *ngIf="user && user.vehiculos?.length; else noVehiculos">
+    <div *ngFor="let v of user.vehiculos">
+      
+      <ion-card class="floating-card">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="assets/icon/movimiento-de-camiones.png" alt="icono vehiculo" />
+          </ion-avatar>
+          <ion-label>
+            <h3 class="label-gray">Placa</h3>
+            <p>{{ v.placa }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-card>
+
+      <ion-card class="floating-card">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="assets/icon/movimiento-de-camiones.png" alt="icono vehiculo" />
+          </ion-avatar>
+          <ion-label>
+            <h3 class="label-gray">Marca</h3>
+            <p>{{ v.marca }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-card>
+
+      <ion-card class="floating-card">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="assets/icon/movimiento-de-camiones.png" alt="icono vehiculo" />
+          </ion-avatar>
+          <ion-label>
+            <h3 class="label-gray">Modelo</h3>
+            <p>{{ v.modelo }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-card>
+
+      <ion-card class="floating-card">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img src="assets/icon/movimiento-de-camiones.png" alt="icono vehiculo" />
+          </ion-avatar>
+          <ion-label>
+            <h3 class="label-gray">Activo</h3>
+            <p>{{ v.activo ? 'Sí' : 'No' }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-card>
+
+    </div>
+  </ng-container>
+
+  <!-- Si no hay vehículos -->
+  <ng-template #noVehiculos>
+    <ion-card class="floating-card">
+      <ion-card-content>
+        <p>No hay vehículos asociados a este usuario.</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+
+  <!-- BOTÓN CERRAR SESIÓN -->
+  <ion-button expand="block" fill="solid" class="logout-button" (click)="logout()">
+    <img src="assets/icon/salida.png" alt="salida" class="logout-icon" />
+    <span class="logout-text">Cerrar Sesión</span>
+  </ion-button>
 
 </ion-content>

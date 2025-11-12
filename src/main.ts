@@ -4,9 +4,16 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { IonicStorageModule, Storage } from '@ionic/storage-angular';
 import { importProvidersFrom } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
+import { addIcons } from 'ionicons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+
+addIcons({
+  'eye-outline': eyeOutline,
+  'eye-off-outline': eyeOffOutline,
+});
 
 bootstrapApplication(AppComponent, {
   providers: [

@@ -1,0 +1,305 @@
+/* === Fondo blanco general === */
+.background-white {
+  --background: #ffffff;
+  color: #000;
+}
+
+/* === CABECERA BLANCA TOTAL === */
+ion-header.custom-header,
+ion-header.custom-header ion-toolbar,
+ion-header.custom-header::part(background),
+ion-header.custom-header ion-toolbar::part(background) {
+  --background: #ffffff !important;
+  --ion-background-color: #ffffff !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* === Texto y botones negros === */
+ion-header.custom-header ion-title,
+ion-header.custom-header ion-buttons,
+ion-header.custom-header ion-menu-button,
+ion-header.custom-header ion-icon {
+  color: #000 !important;
+  --color: #000 !important;
+}
+
+ion-header.custom-header ion-title {
+  font-weight: 700 !important;
+  font-size: 1.3rem;
+  text-align: center;
+  background: #ffffff;
+}
+
+/* === Forzar contenido también blanco === */
+ion-content {
+  --background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000 !important;
+}
+
+/* === Pie de página blanco === */
+ion-footer ion-toolbar {
+  --background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000 !important;
+}
+
+/* === Listas y tarjetas === */
+ion-list,
+ion-item {
+  --background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000 !important;
+}
+
+/* === Botones azules conservan contraste === */
+ion-button {
+  --background: #007aff !important;
+  --color: #ffffff !important;
+}
+
+/* === Estados personalizados === */
+.estado-finalizado {
+  color: #008000 !important; /* verde */
+}
+
+.estado-en-curso {
+  color: #ff8c00 !important; /* naranja */
+}
+
+/* === 🔍 Estilos de la barra de búsqueda === */
+.search-toolbar {
+  --background: #f4f4f4 !important;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+
+  ion-searchbar {
+    --background: #ffffff;
+    --color: #000000;
+    --placeholder-color: #777;
+    --icon-color: #777;
+    border-radius: 25px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    height: 45px;
+    font-size: 15px;
+  }
+}
+
+/* 📱 Estilo del contenedor vacío */
+.no-resultados-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 70vh;
+  color: #444;
+}
+
+.no-resultados-img {
+  width: 180px;
+  height: auto;
+  opacity: 0.85;
+  margin-bottom: 16px;
+}
+
+.no-resultados-titulo {
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.no-resultados-texto {
+  font-size: 0.95rem;
+  color: #666;
+  max-width: 260px;
+}
+
+/* === 🧭 FILTROS debajo de la barra de búsqueda === */
+.filtros-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.filtro-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-width: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filtro-item:hover {
+  background: #f0f0f0;
+  transform: scale(1.03);
+}
+
+.filtro-icono {
+  width: 20px;
+  height: 20px;
+}
+
+.filtro-texto {
+  font-weight: 500;
+  color: #000;
+  font-size: 0.95rem;
+}
+
+.filtro-flecha {
+  font-size: 14px;
+  color: #555;
+}
+
+.filtros-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.8rem;
+}
+
+.filtro-item {
+  position: relative;
+  flex: 1;
+  margin: 0 0.3rem;
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 0.4rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.filtro-item:hover {
+  background: #eaeaea;
+}
+
+.filtro-icono {
+  width: 22px;
+  height: 22px;
+}
+
+.filtro-texto {
+  flex: 1;
+  margin: 0 6px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.filtro-flecha {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.filtro-clear {
+  position: absolute;
+  top: 4px;
+  right: 20px;
+  color: #c0392b;
+  font-size: 1.1rem;
+  z-index: 2;
+}
+
+/* === 🧾 TARJETAS DE RECORRIDOS === */
+.recorrido-card {
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recorrido-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* 🔝 Cabecera */
+.recorrido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.recorrido-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.recorrido-nombre {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.recorrido-usuario {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+/* 📍 Estado + icono */
+.recorrido-estado {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.estado-icono {
+  width: 22px;
+  height: 22px;
+}
+
+.estado-texto {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.estado-finalizado {
+  color: #0b8a28 !important;
+}
+
+.estado-en-curso {
+  color: #ff8c00 !important;
+}
+
+/* ━━ Línea divisoria ━━ */
+.linea-divisoria {
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 10px 0;
+}
+
+/* 📅 Fechas */
+.recorrido-fechas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fecha-texto {
+  font-size: 0.85rem;
+  color: #444;
+  margin: 0;
+}
+
+
