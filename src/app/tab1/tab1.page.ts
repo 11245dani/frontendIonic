@@ -118,16 +118,21 @@ ngOnInit(): void {
 this.loadCalles();
 this.loadRutas();
 this.loadUser(); // <-- cargamos usuario para obtener vehículo asignado
+this.loadActiveRecorrido();  // NUEVO: Llama aquí después de cargar rutas/user
 this.syncInterval = setInterval(() => this.syncData(), 5 * 60 * 1000);
   }
   
 ngAfterViewInit(): void {}
+
 ngOnDestroy(): void {
 if (this.syncInterval) clearInterval(this.syncInterval);
 if (this.envioInterval) clearInterval(this.envioInterval);
 this.stopRouteTracking();
 // limpiar también el watch de showCurrentPosition
 this.clearWatchGeneric(this.watchId);
+if (this.recorridoActivo) {
+    this.finalizarRecorrido();  // NUEVO: Intenta finalizar si está activo (evita problemas async)
+  }
   }
 
 ionViewDidEnter() {
@@ -142,7 +147,64 @@ this.showCurrentPosition();
     }
   }
 
+private async loadActiveRecorrido() {
+  const storedId = localStorage.getItem('activeRecorridoId');
+  if (!storedId) return;  // No hay nada guardado, salimos
 
+  const token = localStorage.getItem('token');
+  if (!token) return;  // No hay token, no podemos verificar
+
+  const baseUrl = environment.miurlserve;
+  let url = `${baseUrl}/recorridos/${storedId}`;  // URL por defecto
+
+  // NUEVO: Si es web, usa ruta relativa como en iniciarRecorrido (ajusta si tienes proxy)
+  if (Capacitor.getPlatform() === 'web') {
+    url = `/api/recorridos/${storedId}`;  // Cambia a relativa para consistencia
+  }
+
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // NUEVO: Verifica si la respuesta es exitosa
+    if (!res.ok) {
+      const errorText = await res.text();  // Lee como texto para depurar
+      console.error(`Error en fetch: Status ${res.status}, Mensaje: ${errorText}`);
+      localStorage.removeItem('activeRecorridoId');  // Borra si falla
+      this.mostrarNotificacion('Error', `No se pudo verificar el recorrido: ${res.status}`);
+      return;
+    }
+
+    // NUEVO: Lee como texto primero para verificar si es JSON válido
+    const text = await res.text();
+    let response;
+    try {
+      response = JSON.parse(text);  // Intenta parsear
+    } catch (parseError) {
+      console.error('Error parseando JSON:', parseError, 'Texto recibido:', text);
+      localStorage.removeItem('activeRecorridoId');
+      this.mostrarNotificacion('Error', 'Respuesta del servidor no es JSON válido');
+      return;
+    }
+
+    // Continúa si es válido
+    if (response && response.estado === 'en_curso') {
+      this.recorridoActivo = response;
+      this.selectedRuta = this.rutas.find(r => r.api_id === this.recorridoActivo.ruta_id);
+      this.iniciarEnvioPosiciones();
+      this.startRouteTracking();
+      await this.mostrarNotificacion('Recorrido restaurado', 'Se detectó un recorrido activo y se ha restaurado.');
+    } else {
+      localStorage.removeItem('activeRecorridoId');  // Borra si no está activo
+    }
+  } catch (err) {
+    console.error('Error general en loadActiveRecorrido:', err);
+    localStorage.removeItem('activeRecorridoId');
+    this.mostrarNotificacion('Error', 'Fallo al conectar con el servidor');
+  }
+}
 
 private async initMap(): Promise<void> {
 return new Promise((resolve) => {
@@ -565,29 +627,22 @@ async mostrarNotificacion(titulo: string, mensaje: string) {
   }
 }
 
-
-
-
 async iniciarRecorrido() {
   if (!this.selectedRuta) return this.mostrarNotificacion('Atención', 'Seleccione una ruta para iniciar');
   const token = localStorage.getItem('token');
   if (!token) return this.mostrarNotificacion('Error', 'No hay token de sesión');
-
   const vehiculoId = this.getAssignedVehicleId();
   if (!vehiculoId) {
     return this.mostrarNotificacion('Error', 'No se encontró ningún vehículo asignado al usuario. Configure un vehículo antes de iniciar el recorrido.');
   }
-
   const body = {
     ruta_id: this.selectedRuta.api_id,
     vehiculo_id: vehiculoId,
     perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da',
   };
   const baseUrl = environment.miurlserve;
-
   try {
     let response: any;
-
     if (Capacitor.getPlatform() === 'web') {
       const res = await fetch('/api/recorridos/iniciar', {
         method: 'POST',
@@ -608,12 +663,11 @@ async iniciarRecorrido() {
       });
       response = res.data;
     }
-
     this.recorridoActivo = response.recorrido;
+    localStorage.setItem('activeRecorridoId', this.recorridoActivo.id);  // NUEVO: Guarda el ID en localStorage
     await this.mostrarNotificacion('Éxito', 'Recorrido iniciado');
     this.iniciarEnvioPosiciones();
     this.startRouteTracking();
-
   } catch (err) {
     console.error('❌ Error al iniciar recorrido:', err);
     this.mostrarNotificacion('Error', 'No se pudo iniciar el recorrido');
@@ -624,55 +678,81 @@ iniciarEnvioPosiciones() {
 if (!this.recorridoActivo) return;
 this.intervalo = setInterval(() => this.enviarPosicion(), 10000);
   }
+
 async enviarPosicion() {
-if (!this.recorridoActivo || !this.currentPosition) return;
-const token = localStorage.getItem('token');
-const body = {
-      recorrido_id: this.recorridoActivo.id,
-      latitud: this.currentPosition.lat,
-      longitud: this.currentPosition.lng,
-    };
-const baseUrl = environment.miurlserve;
-try {
-let response: any;
-const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/posiciones`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      });
-      response = await res.json();
-      console.log('📍 Posición enviada:', response);
-    } catch (err) {
-      console.error('❌ Error al enviar posición:', err);
-    }
+  if (!this.recorridoActivo || !this.currentPosition) return;
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.warn('No hay token para enviar posición');
+    return;
   }
+  const body = {
+    recorrido_id: this.recorridoActivo.id,
+    latitud: this.currentPosition.lat,
+    longitud: this.currentPosition.lng,
+  };
+  const baseUrl = environment.miurlserve;
+  let url = `${baseUrl}/recorridos/${this.recorridoActivo.id}/posiciones`;  // URL por defecto
+
+  // NUEVO: Usa URL relativa en web para consistencia (como en iniciarRecorrido)
+  if (Capacitor.getPlatform() === 'web') {
+    url = `/api/recorridos/${this.recorridoActivo.id}/posiciones`;  // Ajusta si tu proxy usa /api/
+  }
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    // NUEVO: Verifica si la respuesta es exitosa
+    if (!res.ok) {
+      const errorText = await res.text();  // Lee como texto para depurar
+      console.error(`Error en enviar posición: Status ${res.status}, Mensaje: ${errorText}`);
+      this.mostrarNotificacion('Error', `No se pudo enviar posición: ${res.status}`);
+      return;
+    }
+
+    // NUEVO: Lee como texto primero para verificar si es JSON válido
+    const text = await res.text();
+    let response;
+    try {
+      response = JSON.parse(text);  // Intenta parsear
+    } catch (parseError) {
+      console.error('Error parseando JSON en posición:', parseError, 'Texto recibido:', text);
+      this.mostrarNotificacion('Error', 'Respuesta del servidor no es JSON válido');
+      return;
+    }
+
+    console.log('📍 Posición enviada:', response);
+  } catch (err) {
+    console.error('❌ Error general al enviar posición:', err);
+    this.mostrarNotificacion('Error', 'Fallo al conectar con el servidor para enviar posición');
+  }
+}
 async finalizarRecorrido() {
   if (!this.recorridoActivo) return this.mostrarNotificacion('Atención', 'No hay recorrido activo');
-
   const token = localStorage.getItem('token');
   const body = { recorrido_id: this.recorridoActivo.id };
   const baseUrl = environment.miurlserve;
-
   try {
     const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/finalizar`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-
     const response = await res.json();
     console.log('✅ Recorrido finalizado:', response);
-
     await this.mostrarNotificacion('Éxito', 'Recorrido finalizado correctamente');
-
     clearInterval(this.intervalo);
     this.recorridoActivo = null;
+    localStorage.removeItem('activeRecorridoId');  // NUEVO: Borra de localStorage
     this.stopRouteTracking();
     this.clearSelection();
-
   } catch (err) {
     console.error('❌ Error al finalizar recorrido:', err);
     this.mostrarNotificacion('Error', 'No se pudo finalizar el recorrido');
