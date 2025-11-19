@@ -1,0 +1,46 @@
+<!-- =============== MENÚ LATERAL CIUDADANO =============== -->
+<ion-menu menuId="menu-ciudadano" [contentId]="contentId" type="overlay">
+  <ion-content class="menu-content">
+
+    <div class="menu-container">
+
+      <!-- === PERFIL DEL CIUDADANO === -->
+      <div class="menu-profile">
+        <img src="assets/icon/modo-retrato.png" alt="Usuario" class="profile-img" />
+        <h2 class="user-name">{{ user?.name || 'Ciudadano' }}</h2>
+
+        <div class="user-info">
+          <img src="assets/icon/sobre.png" alt="Correo" class="info-icon" />
+          <span class="user-email">{{ user?.email || 'correo@ejemplo.com' }}</span>
+        </div>
+      </div>
+
+      <!-- === OPCIONES === -->
+      <ion-list class="menu-options">
+
+        <ion-item button (click)="navegarYcerrar('perfil')" class="menu-item">
+          <img src="assets/icon/usuario-del-circulo.png" class="option-icon" />
+          <h2>Mi Perfil</h2>
+        </ion-item>
+
+        <ion-item button (click)="navegarYcerrar('reportes')" class="menu-item">
+          <img src="assets/icon/marcador-de-mapa.png" class="option-icon" />
+          <h2>Reportar Punto</h2>
+        </ion-item>
+
+        <ion-item button (click)="navegarYcerrar('rutas')" class="menu-item">
+          <img src="assets/icon/viaje-en-coche.png" class="option-icon" />
+          <h2>Consultar Rutas</h2>
+        </ion-item>
+
+      </ion-list>
+
+      <!-- === BOTÓN DE CERRAR SESIÓN === -->
+      <div class="logout-container">
+        <ion-button expand="block" class="logout-button" (click)="cerrarSesion()">
+          Cerrar sesión
+        </ion-button>
+      </div>
+    </div>
+  </ion-content>
+</ion-menu>

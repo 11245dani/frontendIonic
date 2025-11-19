@@ -19,6 +19,7 @@ import { IonItem,
   IonCard, 
   IonProgressBar,
   IonButtons, 
+  IonSpinner,
   IonText, 
   IonLabel } from '@ionic/angular/standalone';
 import { MenuController } from '@ionic/angular';
@@ -30,7 +31,6 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { SideMenuComponent } from '../components/side-menu/side-menu.component'; // ajusta la ruta
-
 // Augment Leaflet types to include rotation properties
 declare module 'leaflet' {
 interface MarkerOptions {
@@ -68,7 +68,8 @@ IonMenu,
 IonList,
 IonItem,
 IonIcon,
-SideMenuComponent
+SideMenuComponent,
+IonSpinner
   ]
 })
 export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
@@ -113,6 +114,10 @@ private readonly isWeb = Capacitor.getPlatform() === 'web';
 // usuario cargado (para tomar vehículo)
 public user: any = null;
   alertController: any;
+  // === NUEVAS PROPIEDADES DE LOADING ===
+  isPageLoading = true;                    // Loading global al entrar
+  isActionLoading = false;                 // Loading en botones
+  currentAction: 'iniciar' | 'finalizar' | null = null; // Para saber qué botón está cargando
 constructor(private dataService: DataService, private menuCtrl: MenuController, private userService: UserService, private router: Router) {}
 ngOnInit(): void {
 this.loadCalles();
@@ -135,17 +140,27 @@ if (this.recorridoActivo) {
   }
   }
 
-ionViewDidEnter() {
-if (this.map) {
-this.map.invalidateSize();
+async ionViewDidEnter() {
+
+  // Esperamos que rutas y calles estén listas antes del mapa
+  await Promise.all([this.loadCalles(), this.loadRutas()]);
+
+  // Apagamos el loading para que el div del mapa EXISTE
+  this.isPageLoading = false;
+
+  // Importante: dejar que Angular ponga el div en el DOM
+  setTimeout(async () => {
+    if (!this.map) {
+      await this.initMap();
+      this.drawCallesOnMap(this.calles);
+      this.drawRutasOnMap(this.rutas);
+      this.showCurrentPosition();
     } else {
-this.initMap().then(() => {
-this.drawCallesOnMap(this.calles);
-this.drawRutasOnMap(this.rutas);
-this.showCurrentPosition();
-      });
+      this.map.invalidateSize();
     }
-  }
+  }, 200); // <-- 200ms garantiza que el DOM esté listo
+}
+
 
 private async loadActiveRecorrido() {
   const storedId = localStorage.getItem('activeRecorridoId');
@@ -229,10 +244,10 @@ this.recorridoLayer = L.layerGroup().addTo(this.map);
 const customControl = new (L.Control.extend({
 onAdd: () => {
 const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-            div.style.background = 'black';
+            div.style.background = 'white';
             div.style.padding = '6px';
             div.style.fontSize = '13px';
-            div.style.boxShadow = '0 0 4px rgba(0,0,0,0.3)';
+            div.style.boxShadow = '0 0 4px rgba(255, 255, 255, 0.36)';
             div.innerHTML = `<label><input type="checkbox" id="chkCalles" checked> Calles</label><br> <label><input type="checkbox" id="chkRutas" checked> Rutas</label> `;
 return div;
           }
@@ -330,15 +345,22 @@ private async watchPositionWrapper(successCb: (pos: any) => void, errorCb?: (err
 if (!this.isWeb) {
 // Capacitor.watchPosition: recibe opciones y callback. Retorna watchId (en web plugin devuelve string, en native también).
 // Notar: en algunas versiones devuelve number; normalizamos a string.
-const id = await Geolocation.watchPosition(options as any, (position, err) => {
-if (err) {
-if (errorCb) errorCb(err);
-else console.error('watchPosition error (native):', err);
-return;
-        }
-if (position) successCb(position);
-      }) as unknown as string;
-return String(id);
+type NativePosition = { coords: { latitude: number; longitude: number; accuracy?: number } };
+type NativeWatchId = string | number;
+
+const idRaw: NativeWatchId = (await Geolocation.watchPosition(
+  options as any,
+  (position: NativePosition | null, err?: any) => {
+    if (err) {
+      if (errorCb) errorCb(err);
+      else console.error('watchPosition error (native):', err);
+      return;
+    }
+    if (position) successCb(position);
+  }
+)) as unknown as NativeWatchId;
+
+return String(idRaw);
     }
 // navegador web: navigator.geolocation.watchPosition devuelve number
 const id = navigator.geolocation.watchPosition(
@@ -628,31 +650,45 @@ async mostrarNotificacion(titulo: string, mensaje: string) {
 }
 
 async iniciarRecorrido() {
-  if (!this.selectedRuta) return this.mostrarNotificacion('Atención', 'Seleccione una ruta para iniciar');
-  const token = localStorage.getItem('token');
-  if (!token) return this.mostrarNotificacion('Error', 'No hay token de sesión');
-  const vehiculoId = this.getAssignedVehicleId();
-  if (!vehiculoId) {
-    return this.mostrarNotificacion('Error', 'No se encontró ningún vehículo asignado al usuario. Configure un vehículo antes de iniciar el recorrido.');
-  }
-  const body = {
-    ruta_id: this.selectedRuta.api_id,
-    vehiculo_id: vehiculoId,
-    perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da',
-  };
-  const baseUrl = environment.miurlserve;
+
+  if (this.isActionLoading) return; // evita doble click
+
+  this.isActionLoading = true;
+  this.currentAction = 'iniciar';
+
   try {
+    if (!this.selectedRuta)
+      return this.mostrarNotificacion('Atención', 'Seleccione una ruta para iniciar');
+
+    const token = localStorage.getItem('token');
+    if (!token)
+      return this.mostrarNotificacion('Error', 'No hay token de sesión');
+
+    const vehiculoId = this.getAssignedVehicleId();
+    if (!vehiculoId) {
+      return this.mostrarNotificacion('Error', 'No se encontró ningún vehículo asignado al usuario.');
+    }
+
+    const body = {
+      ruta_id: this.selectedRuta.api_id,
+      vehiculo_id: vehiculoId,
+      perfil_id: 'fbfa2448-160e-496b-b58f-1048a3f3a2da',
+    };
+
+    const baseUrl = environment.miurlserve;
+
     let response: any;
+
     if (Capacitor.getPlatform() === 'web') {
       const res = await fetch('/api/recorridos/iniciar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer ' + token
+          'Authorization': 'Bearer ' + token,
         },
         body: JSON.stringify(body),
-        credentials: 'include'
+        credentials: 'include',
       });
       response = await res.json();
     } else {
@@ -663,14 +699,21 @@ async iniciarRecorrido() {
       });
       response = res.data;
     }
+
     this.recorridoActivo = response.recorrido;
-    localStorage.setItem('activeRecorridoId', this.recorridoActivo.id);  // NUEVO: Guarda el ID en localStorage
+    localStorage.setItem('activeRecorridoId', this.recorridoActivo.id);
+
     await this.mostrarNotificacion('Éxito', 'Recorrido iniciado');
+
     this.iniciarEnvioPosiciones();
     this.startRouteTracking();
+
   } catch (err) {
     console.error('❌ Error al iniciar recorrido:', err);
     this.mostrarNotificacion('Error', 'No se pudo iniciar el recorrido');
+  } finally {
+    this.isActionLoading = false;
+    this.currentAction = null;
   }
 }
 
@@ -735,29 +778,47 @@ async enviarPosicion() {
   }
 }
 async finalizarRecorrido() {
-  if (!this.recorridoActivo) return this.mostrarNotificacion('Atención', 'No hay recorrido activo');
-  const token = localStorage.getItem('token');
-  const body = { recorrido_id: this.recorridoActivo.id };
-  const baseUrl = environment.miurlserve;
+
+  if (this.isActionLoading) return;
+
+  this.isActionLoading = true;
+  this.currentAction = 'finalizar';
+
   try {
+    if (!this.recorridoActivo)
+      return this.mostrarNotificacion('Atención', 'No hay recorrido activo');
+
+    const token = localStorage.getItem('token');
+    const body = { recorrido_id: this.recorridoActivo.id };
+    const baseUrl = environment.miurlserve;
+
     const res = await fetch(`${baseUrl}/recorridos/${this.recorridoActivo.id}/finalizar`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
+
     const response = await res.json();
     console.log('✅ Recorrido finalizado:', response);
+
     await this.mostrarNotificacion('Éxito', 'Recorrido finalizado correctamente');
+
     clearInterval(this.intervalo);
     this.recorridoActivo = null;
-    localStorage.removeItem('activeRecorridoId');  // NUEVO: Borra de localStorage
+
+    localStorage.removeItem('activeRecorridoId');
     this.stopRouteTracking();
     this.clearSelection();
+
   } catch (err) {
     console.error('❌ Error al finalizar recorrido:', err);
     this.mostrarNotificacion('Error', 'No se pudo finalizar el recorrido');
+  } finally {
+    this.isActionLoading = false;
+    this.currentAction = null;
   }
 }
+
 
 // --- ADICION: utilidades matemáticas (haversine y proyección)
 //

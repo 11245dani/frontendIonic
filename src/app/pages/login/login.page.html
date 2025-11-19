@@ -2,7 +2,6 @@
   <button class="back-button" routerLink="/home">
     <img src="/assets/icon/flecha-circulo-izquierda.png" alt="Back" class="back-icon" />
   </button>
-
   <ion-grid class="login-grid">
     <ion-row class="ion-justify-content-center">
       <ion-col size="12">
@@ -20,16 +19,27 @@
           ></ion-input>
         </ion-item>
 
+        <!-- Campo contraseña con ojo para mostrar/ocultar -->
         <ion-item lines="full">
           <ion-label position="stacked">Contraseña</ion-label>
           <ion-input
             [(ngModel)]="password"
             name="password"
-            type="password"
+            [type]="passwordVisible ? 'text' : 'password'"
             placeholder="Ingresa tu contraseña"
             required
           ></ion-input>
-          <ion-icon name="eye-outline" slot="end"></ion-icon>
+
+          <!-- Icono ojo que alterna visibilidad -->
+          <ion-button 
+            slot="end" 
+            fill="clear" 
+            (click)="passwordVisible = !passwordVisible"
+            class="eye-button">
+            <ion-icon 
+              [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'">
+            </ion-icon>
+          </ion-button>
         </ion-item>
 
         <p class="forgot-password">¿Olvidaste tu contraseña?</p>
@@ -44,7 +54,6 @@
           <span *ngIf="!isLoading">Iniciar Sesión</span>
         </ion-button>
 
-        <!-- 🔹 Enlace clicable a /crear-cuenta -->
         <p class="sign-up">
           ¿No tienes una cuenta?
           <span class="link-crear-cuenta" routerLink="/crear-cuenta">Crear cuenta</span>

@@ -8,37 +8,56 @@
 </ion-header>
 
 <ion-content class="ion-padding pastel-background" id="main-content">
-  <h2 class="titulo-mapa">Mapa</h2>
 
-  <div id="map" class="map-container"></div>
+  <!-- ==================== LOADING GLOBAL AL ENTRAR AL TAB ==================== -->
+  <div class="full-screen-loading" *ngIf="isPageLoading">
+    <ion-spinner name="crescent" color="success"></ion-spinner>
+    <p class="loading-text">Cargando mapa y rutas...</p>
+  </div>
 
-<ion-card class="floating-card">
-  <ion-card-header>
-    <ion-card-title>Gestión de Recorridos</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <ion-label *ngIf="selectedRuta" class="label-gray">
-      Ruta seleccionada: {{ selectedRuta.nombre_ruta ?? 'Sin nombre' }}
-    </ion-label>
+  <!-- Contenido normal (se muestra cuando termine el loading) -->
+  <div [hidden]="isPageLoading">
+    <h2 class="titulo-mapa">Mapa</h2>
+    <div id="map" class="map-container"></div>
 
-    <ion-button expand="block" class="action-button start-button"
-      (click)="iniciarRecorrido()" [disabled]="recorridoActivo">
-      Iniciar Recorrido
-    </ion-button>
+    <ion-card class="floating-card">
+      <ion-card-header>
+        <ion-card-title>Gestión de Recorridos</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
 
-    <ion-button expand="block" class="action-button stop-button"
-      (click)="finalizarRecorrido()" [disabled]="!recorridoActivo">
-      Finalizar Recorrido
-    </ion-button>
+        <ion-label *ngIf="selectedRuta" class="label-gray">
+          Ruta seleccionada: {{ selectedRuta.nombre_ruta ?? 'Sin nombre' }}
+        </ion-label>
 
-    <div *ngIf="recorridoActivo" class="progress-section">
-      <ion-text color="medium">Progreso de la ruta</ion-text>
-      <ion-progress-bar [value]="routeProgress.percent / 100" color="success"></ion-progress-bar>
-      <ion-text color="medium">
-        {{ routeProgress.percent }}% completado ({{ routeProgress.distanceMeters }} metros recorridos)
-      </ion-text>
-    </div>
-  </ion-card-content>
-</ion-card>
+        <!-- Botón Iniciar con loading -->
+        <ion-button 
+          expand="block" 
+          class="action-button start-button"
+          (click)="iniciarRecorrido()" 
+          [disabled]="recorridoActivo || isActionLoading">
+          <ion-spinner name="crescent" *ngIf="isActionLoading && currentAction === 'iniciar'"></ion-spinner>
+          <span *ngIf="! (isActionLoading && currentAction === 'iniciar')">Iniciar Recorrido</span>
+        </ion-button>
 
+        <!-- Botón Finalizar con loading -->
+        <ion-button 
+          expand="block" 
+          class="action-button stop-button"
+          (click)="finalizarRecorrido()" 
+          [disabled]="!recorridoActivo || isActionLoading">
+          <ion-spinner name="crescent" *ngIf="isActionLoading && currentAction === 'finalizar'"></ion-spinner>
+          <span *ngIf="! (isActionLoading && currentAction === 'finalizar')">Finalizar Recorrido</span>
+        </ion-button>
+
+        <div *ngIf="recorridoActivo" class="progress-section">
+          <ion-text color="medium">Progreso de la ruta</ion-text>
+          <ion-progress-bar [value]="routeProgress.percent / 100" color="success"></ion-progress-bar>
+          <ion-text color="medium">
+            {{ routeProgress.percent }}% completado ({{ routeProgress.distanceMeters }} metros recorridos)
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

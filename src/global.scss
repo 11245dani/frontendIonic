@@ -21,8 +21,35 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/* Dark mode */
-@import '@ionic/angular/css/palettes/dark.system.css';
+:root {
+  /* Colores globales para quitar el azul */
+  --ion-color-primary: #6ce976;   /* o el color que quieras */
+  --ion-color-primary-rgb: 108,233,118;
+
+  --ion-color-secondary: #000000;
+  --ion-color-tertiary: #000000;
+
+  --ion-toolbar-background: #ffffff;
+  --ion-background-color: #ffffff;
+
+  /* iconos y texto */
+  --ion-text-color: #000;
+}
+
+ion-modal ion-button,
+ion-alert ion-button,
+ion-datetime ion-button,
+ion-picker ion-button,
+ion-action-sheet ion-button {
+  --color: #000 !important;
+}
+
+
+
+//ion-tab-bar {
+  //display: none !important;
+//}
+
 
 /* Fuente global (opcional) */
 body {

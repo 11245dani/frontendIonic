@@ -3,18 +3,48 @@
   color: #000;
 }
 
-/* === Forzar cabecera blanca total === */
+/* === FORZAR CABECERA BLANCA TOTAL — FUNCIONA 100% EN ANDROID Y IOS === */
+
 ion-header.custom-header,
-ion-header.custom-header ion-toolbar,
-ion-header.custom-header::part(background),
-ion-header.custom-header ion-toolbar::part(background) {
+ion-header.custom-header ion-toolbar {
   --background: #ffffff !important;
   --ion-background-color: #ffffff !important;
   background: #ffffff !important;
   background-color: #ffffff !important;
-  box-shadow: none !important;
-  border: none !important;
 }
+
+/* Android usa este "part" */
+ion-header.custom-header::part(background),
+ion-header.custom-header ion-toolbar::part(background) {
+  background: #ffffff !important;
+  --background: #ffffff !important;
+}
+
+/* iOS usa este "part" */
+ion-header.custom-header::part(container),
+ion-header.custom-header ion-toolbar::part(container) {
+  background: #ffffff !important;
+}
+
+/* Quitar sombra azul */
+ion-header.custom-header,
+ion-header.custom-header ion-toolbar {
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+/* Título negro */
+ion-header.custom-header ion-title {
+  color: #000 !important;
+  font-weight: 700;
+}
+
+/* Icono del menú en negro */
+ion-header.custom-header ion-menu-button {
+  color: #000 !important;
+  --color: #000 !important;
+}
+
 
 .custom-header ion-title {
   color: #000 !important; /* letras negras */

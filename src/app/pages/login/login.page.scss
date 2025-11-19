@@ -114,7 +114,6 @@ ion-input {
 }
 
 
-
 .link-crear-cuenta {
   color: #4caf50; /* verde agradable */
   font-weight: 600;
@@ -124,4 +123,15 @@ ion-input {
 
 .link-crear-cuenta:hover {
   color: #2e7d32; /* tono más oscuro al pasar el dedo o cursor */
+}
+
+.eye-button {
+  --padding-end: 0;
+  --padding-start: 0;
+  margin: 0;
+  height: 100%;
+  ion-icon {
+    font-size: 24px;
+    color: #666;
+  }
 }

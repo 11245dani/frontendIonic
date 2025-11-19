@@ -19,6 +19,7 @@ import { RouterModule } from '@angular/router';
 export class LoginPage {
   email = '';
   password = '';
+  passwordVisible = false;   // ← NUEVA PROPIEDAD
   isLoading = false;
   errorMessage = '';
 
@@ -63,6 +64,10 @@ async login() {
       },
     });
 }
+
+togglePasswordVisibility() {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
 
   goBack() {
