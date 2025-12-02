@@ -1,20 +1,41 @@
 import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+//import { IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { IonInput, IonItem, IonList, 
+  IonContent,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonLabel,
+  IonButton,
+  IonIcon,
+  IonText,
+  IonSpinner
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, 
-    HttpClientModule,     RouterModule,   // <- necesario para routerLink
+  imports: [CommonModule, FormsModule,
+    HttpClientModule, RouterModule, IonInput, IonItem, IonList,
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonLabel,
+    IonButton,
+    IonIcon,
+    IonText,
+    IonSpinner
 ],
+
 })
 export class LoginPage {
   email = '';
@@ -34,7 +55,7 @@ async login() {
   this.errorMessage = '';
 
   this.http
-    .post('http://127.0.0.1:8000/api/login', {
+    .post('https://apidani.eleueleo.com/api/login', {
       email: this.email,
       password: this.password,
     })

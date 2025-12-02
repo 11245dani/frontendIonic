@@ -34,9 +34,14 @@
 }
 
 .login-grid {
-  margin-top: 40%;
+  margin-top: 20vh;
   animation: slideIn 1s ease-out forwards;
 }
+
+ion-content {
+  --overflow: auto;
+}
+
 
 @keyframes slideIn {
   from {

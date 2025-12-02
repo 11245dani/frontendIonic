@@ -12,7 +12,7 @@
     <p class="subtitle">Ayúdanos a mantener una Buenaventura limpia</p>
   </div>
 
-  <!-- Formulario de registro -->
+  <!-- Formulario -->
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="fade-in">
 
     <!-- Nombre -->
@@ -53,6 +53,7 @@
           placeholder="Ingresa tu contraseña"
           class="input-field"
         ></ion-input>
+
         <ion-icon
           [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
           slot="end"
@@ -73,6 +74,7 @@
           placeholder="Repite tu contraseña"
           class="input-field"
         ></ion-input>
+
         <ion-icon
           [name]="showConfirmPassword ? 'eye-off-outline' : 'eye-outline'"
           slot="end"
@@ -87,6 +89,7 @@
     <ion-card class="floating-card">
       <ion-item lines="none">
         <img src="assets/icon/usuarios.png" alt="icono rol" class="field-icon" />
+
         <ion-select
           formControlName="rol"
           interface="popover"
@@ -96,6 +99,7 @@
           <ion-select-option value="ciudadano">Ciudadano</ion-select-option>
           <ion-select-option value="conductor">Conductor</ion-select-option>
         </ion-select>
+
       </ion-item>
     </ion-card>
 
@@ -117,5 +121,6 @@
         <ion-text color="primary" routerLink="/login">Inicia sesión</ion-text>
       </p>
     </div>
+
   </form>
 </ion-content>

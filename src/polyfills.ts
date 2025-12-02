@@ -49,6 +49,13 @@ import './zone-flags';
  */
 import 'zone.js';  // Included with Angular CLI.
 
+import * as L from 'leaflet';
+(window as any).L = L;
+
+// Plugins que dependen de L
+import 'leaflet-rotatedmarker';
+
+
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

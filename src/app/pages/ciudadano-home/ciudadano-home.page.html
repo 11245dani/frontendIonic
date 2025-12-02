@@ -1,45 +1,23 @@
 <ion-app>
-
   <!-- === MENU LATERAL === -->
-  <app-menu-ciudadano contentId="main-content"></app-menu-ciudadano>
-
+  <!--<app-menu-ciudadano contentId="main-content"></app-menu-ciudadano>-->
   <!-- === CONTENIDO PRINCIPAL === -->
   <div class="ion-page" id="main-content">
-
     <ion-header>
       <ion-toolbar color="success">
-
         <ion-buttons slot="start">
           <ion-menu-button menu="menu-ciudadano"></ion-menu-button>
         </ion-buttons>
-
         <ion-title>Bienvenido Ciudadano</ion-title>
-
         <ion-buttons slot="end">
           <ion-button (click)="logout()">
             <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
-
       </ion-toolbar>
     </ion-header>
-
-    <ion-content class="ion-padding fade-in">
-      <div class="welcome-card">
-        <h2>Hola, {{ user?.name }}</h2>
-        <p>
-          Bienvenido a la aplicación ciudadana de <strong>BasurApp</strong>.
-          Desde aquí podrás reportar incidencias, consultar rutas de recolección
-          y participar activamente por una ciudad más limpia.
-        </p>
-
-        <ion-button expand="block" color="tertiary" class="action-button" (click)="irPerfil()">
-          <ion-icon name="person-outline" slot="start"></ion-icon>
-          Ir a Mi Perfil
-        </ion-button>
-      </div>
+    <ion-content>
+      <div id="map" style="height: 100%; width: 100%;"></div>
     </ion-content>
-
   </div>
-
 </ion-app>

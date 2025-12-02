@@ -1,10 +1,9 @@
-/* === Botón del menú visible en negro === */
+/* === Botón del menú visible en negro === 
 ion-header.custom-header ion-menu-button {
   color: #000 !important;
   --color: #000 !important;
 }
 
-/* === Fondo del menú lateral totalmente blanco === */
 ion-menu,
 ion-menu::part(container),
 ion-menu::part(content),
@@ -17,18 +16,15 @@ ion-list.menu-item {
   background-color: #ffffff !important;
 }
 
-/* === Sombras suaves del menú === */
 ion-menu::part(container) {
   border-radius: 0 20px 20px 0;
   box-shadow: 4px 0px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* === Fondo del overlay (oscurecido detrás del menú) === */
 ion-menu::part(backdrop) {
   background-color: rgba(89, 245, 128, 0.3);
 }
 
-/* === Opciones del menú === */
 .menu-options {
   margin-top: 10px;
   padding: 0 10px;
@@ -48,7 +44,6 @@ ion-menu::part(backdrop) {
   font-size: 1.05rem;
   margin: 0;
 }
-/* === Perfil del usuario === */
 .menu-profile {
   display: flex;
   flex-direction: column;
@@ -95,7 +90,6 @@ ion-menu::part(backdrop) {
   font-size: 0.95rem;
 }
 
-/* === Opciones del menú === */
 .menu-options {
   margin-top: 10px;
   padding: 0 10px;
@@ -124,7 +118,6 @@ ion-menu::part(backdrop) {
   margin-right: 12px;
 }
 
-/* === Efecto hover/touch === */
 .menu-item:hover,
 .menu-item:focus,
 .menu-item.activated {
@@ -139,7 +132,6 @@ ion-menu::part(backdrop) {
   color: #ffffff !important;
 }
 
-/* === Sombra y borde suave del contenedor === */
 ion-menu::part(container) {
   border-radius: 0 20px 20px 0;
   box-shadow: 4px 0px 16px rgba(0, 0, 0, 0.08);
@@ -149,7 +141,6 @@ ion-menu::part(backdrop) {
   background-color: rgba(89, 245, 128, 0.3);
 }
 
-/* === Botón Cerrar sesión === */
 .logout-container {
   padding: 20px;
   margin-top: auto;
@@ -169,7 +160,6 @@ ion-menu::part(backdrop) {
   --background: #c62828;
 }
 
-/* === Fondo del ion-list que contiene los items === */
 ion-menu ion-list {
   --background: #ffffff !important;
   --ion-background-color: #ffffff !important;
@@ -179,7 +169,6 @@ ion-menu ion-list {
   border: none !important;
 }
 
-/* === Fondo de los ion-item (opciones) === */
 ion-menu ion-item {
   --background: #ffffff !important;
   --ion-item-background: #ffffff !important;
@@ -192,16 +181,14 @@ ion-menu ion-item {
   transition: all 0.3s ease;
 }
 
-/* ✅ cuando el mouse pasa o se toca el item */
 ion-menu ion-item:hover::part(native),
 ion-menu ion-item:focus::part(native),
 ion-menu ion-item.activated::part(native) {
-  background-color: #188a42 !important; /* verde activo */
+  background-color: #188a42 !important; 
   border-color: #188a42 !important;
   color: #ffffff !important;
 }
 
-/* === Texto y estilo de las opciones === */
 ion-menu ion-item h2 {
   color: #000000 !important;
   font-weight: 600;
@@ -209,26 +196,23 @@ ion-menu ion-item h2 {
   margin: 0;
 }
 
-/* Contenedor flexible para empujar el botón al fondo */
 .menu-container {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* Lista de opciones ocupa el espacio disponible */
 .menu-options {
   flex-grow: 1;
 }
 
-/* Contenedor del botón al fondo */
 .logout-container {
   margin-top: auto;
   padding: 20px;
 }
 
 
-/* === Responsive === */
+
 @media (max-width: 768px) {
   #map {
     height: 55vh;
@@ -237,4 +221,4 @@ ion-menu ion-item h2 {
   ion-toolbar ion-button {
     font-size: 12px;
   }
-}
+} */

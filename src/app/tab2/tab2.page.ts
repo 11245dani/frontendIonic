@@ -107,7 +107,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     });
 
     this.http
-      .get(`http://127.0.0.1:8000/api/misrecorridos?perfil_id=${perfil_id}`, { headers })
+      .get(`https://apidani.eleueleo.com/api/misrecorridos?perfil_id=${perfil_id}`, { headers })
       .subscribe({
         next: (res: any) => {
           let nuevos = res.recorridos ?? [];

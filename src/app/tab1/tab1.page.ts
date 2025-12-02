@@ -1,6 +1,37 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+
 import * as L from 'leaflet';
-import 'leaflet-rotatedmarker'; // Asegúrate de instalar leaflet-rotatedmarker via npm
+
+(window as any).L = L;
+
+import 'leaflet-rotatedmarker';
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'assets/marker-icon-2x.png',
+  iconUrl: 'assets/marker-icon.png',
+  shadowUrl: 'assets/marker-shadow.png',
+});
+
+import {
+  Map,
+  map,
+  tileLayer,
+  layerGroup,
+  marker,
+  Marker,
+  icon,
+  Icon,
+  latLngBounds,
+  LatLngBounds,
+  LatLngExpression,
+  Control,
+  DomUtil,
+  DomEvent,
+  polyline,
+  Polyline,
+  LayerGroup
+} from 'leaflet';
+// Ahora usas las funciones directamente SIN prefijo L
 import { CommonModule } from '@angular/common';
 import { IonItem, 
   IonIcon,
@@ -76,22 +107,22 @@ export class Tab1Page implements OnInit, AfterViewInit, OnDestroy {
 calles: any[] = [];
 rutas: any[] = [];
 intervalo: any;
-private map!: L.Map;
-private callesLayer!: L.LayerGroup;
-private rutasLayer!: L.LayerGroup;
-private recorridoLayer!: L.LayerGroup;
-private userMarker!: L.Marker;
+private map!: Map;
+private callesLayer!: LayerGroup;
+private rutasLayer!: LayerGroup;
+private recorridoLayer!: LayerGroup;
+private userMarker!: Marker;
 private watchId: string | null = null; // usado por showCurrentPosition (general)
 private envioInterval: any;
 private syncInterval: any;
-private markerConductor: L.Marker | null = null;
-private rutasPolylines: Record<string, L.Polyline[]> = {}; // map ruta.id -> array de polylines en mapa
+private markerConductor: Marker | null = null;
+private rutasPolylines: Record<string, Polyline[]> = {}; // map ruta.id -> array de polylines en mapa
 private activeRouteId: string | null = null; // api_id de la ruta activa
 private watchPositionId: string | null = null; // id devuelto por Geolocation.watchPosition (startRouteTracking)
-private travelledLine: L.Polyline | null = null; // linea que muestra lo recorrido
-private remainingLine: L.Polyline | null = null; // linea restante (opcional)
+private travelledLine: Polyline | null = null; // linea que muestra lo recorrido
+private remainingLine: Polyline | null = null; // linea restante (opcional)
 public routeProgress = { distanceMeters: 0, percent: 0 }; // estado para mostrar en UI
-selectedElement: L.Polyline | null = null;
+selectedElement: Polyline | null = null;
 selectedOriginalColor: string | null = null;
 mostrarCalles = true;
 mostrarRutas = true;
@@ -225,8 +256,8 @@ private async initMap(): Promise<void> {
 return new Promise((resolve) => {
 setTimeout(() => {
 if (this.map) this.map.remove();
-const bounds = L.latLngBounds([3.80, -77.15], [3.95, -76.95]);
-this.map = L.map('map', {
+const bounds = latLngBounds([3.80, -77.15], [3.95, -76.95]);
+this.map = map('map', {
           center: [3.8801, -77.0312],
           zoom: 14,
           maxBounds: bounds,
@@ -234,16 +265,17 @@ this.map = L.map('map', {
           minZoom: 12,
           maxZoom: 19
         });
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
           attribution: '© OpenStreetMap'
         }).addTo(this.map);
-this.callesLayer = L.layerGroup().addTo(this.map);
-this.rutasLayer = L.layerGroup().addTo(this.map);
-this.recorridoLayer = L.layerGroup().addTo(this.map);
-const customControl = new (L.Control.extend({
+this.callesLayer = layerGroup().addTo(this.map);
+this.rutasLayer = layerGroup().addTo(this.map);
+this.recorridoLayer = layerGroup().addTo(this.map);
+
+const customControl = Control.extend({
 onAdd: () => {
-const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+const div = DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
             div.style.background = 'white';
             div.style.padding = '6px';
             div.style.fontSize = '13px';
@@ -251,8 +283,9 @@ const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control
             div.innerHTML = `<label><input type="checkbox" id="chkCalles" checked> Calles</label><br> <label><input type="checkbox" id="chkRutas" checked> Rutas</label> `;
 return div;
           }
-        }))({ position: 'topright' });
-        customControl.addTo(this.map);
+        });
+        new customControl ({ position: 'topright' }).addTo(this.map);
+
 setTimeout(() => {
 const chkCalles = document.getElementById('chkCalles') as HTMLInputElement;
 const chkRutas = document.getElementById('chkRutas') as HTMLInputElement;
@@ -260,10 +293,11 @@ const chkRutas = document.getElementById('chkRutas') as HTMLInputElement;
           chkRutas.addEventListener('change', () => this.toggleRutas());
         }, 500);
 // Nuevo botón para centrar en la posición actual
-const centerControl = new (L.Control.extend({
-onAdd: (map: L.Map) => {
-const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-const button = L.DomUtil.create('a', 'leaflet-control-center', container);
+
+const centerControl = Control.extend({
+onAdd: (map: Map) => {
+const container = DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+const button = DomUtil.create('a', 'leaflet-control-center', container);
     button.innerHTML = '📍';
     button.style.backgroundColor = 'white';
     button.style.width = '30px';
@@ -273,8 +307,9 @@ const button = L.DomUtil.create('a', 'leaflet-control-center', container);
     button.style.justifyContent = 'center';
     button.style.cursor = 'pointer';
     button.title = 'Centrar en mi posición';
-L.DomEvent.on(button, 'click', (e) => {
-L.DomEvent.stopPropagation(e);
+
+DomEvent.on(button, 'click', (e) => {
+DomEvent.stopPropagation(e);
 if (this.currentPosition) {
 this.map.setView([this.currentPosition.lat, this.currentPosition.lng], 15);
       } else {
@@ -283,8 +318,8 @@ alert('No se ha detectado la posición actual.');
     });
 return container;
   }
-}))({ position: 'bottomright' });
-centerControl.addTo(this.map);
+});
+  new centerControl ({ position: 'bottomright' }).addTo(this.map);
 resolve();
       }, 300);
     });
@@ -475,8 +510,8 @@ await this.notify('Ubicación detectada', 'Posición actual registrada');
 private setUserMarker(lat: number, lng: number, popup: string, center: boolean = false) {
 if (!this.map) return;
 if (!this.userMarker) {
-this.userMarker = L.marker([lat, lng], {
-        icon: L.icon({
+this.userMarker = marker([lat, lng], {
+        icon: icon({
           iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
           iconSize: [28, 28],
           iconAnchor: [14, 28],
@@ -515,7 +550,7 @@ try {
 const shape = JSON.parse(calle.shape);
 if (shape?.type === 'LineString') {
 const coords = shape.coordinates.map((c: any) => [c[1], c[0]]);
-const poly = L.polyline(coords, { color: '#5a7ba6', weight: 4, opacity: 0.9 })
+const poly = polyline(coords, { color: '#5a7ba6', weight: 4, opacity: 0.9 })
             .addTo(this.callesLayer);
           poly.on('click', () => this.selectElement(poly, 'Calle', calle.nombre ?? 'Sin nombre'));
         }
@@ -528,7 +563,7 @@ const poly = L.polyline(coords, { color: '#5a7ba6', weight: 4, opacity: 0.9 })
 async loadRutas(refresh = false) {
 try {
 const token = localStorage.getItem('token') || '';
-const url = 'http://localhost:8000/api/rutas';
+const url = 'https://apidani.eleueleo.com/api/rutas';
 const res = await CapacitorHttp.get({
         url,
         headers: { Authorization: `Bearer ${token}` },
@@ -560,7 +595,7 @@ if (!shape || !shape.coordinates) return;
 const drawLine = (coords: any[]) => {
 if (!Array.isArray(coords) || coords.length === 0) return;
 const latlngs = coords.map(c => [c[1], c[0]]);
-const poly = L.polyline(latlngs, { color: '#00cc44', weight: 5, opacity: 0.95 }).addTo(this.rutasLayer);
+const poly = polyline(latlngs, { color: '#00cc44', weight: 5, opacity: 0.95 }).addTo(this.rutasLayer);
 // almacenar
 const key = ruta.api_id ?? String(ruta.id);
 if (!this.rutasPolylines[key]) this.rutasPolylines[key] = [];
@@ -583,7 +618,7 @@ drawLine(shape.coordinates);
     });
   }
 // =================== SELECCIÓN ===================
-private selectElement(poly: L.Polyline, tipo: string, nombre: string) {
+private selectElement(poly: Polyline, tipo: string, nombre: string) {
 if (this.selectedElement) {
 this.selectedElement.setStyle({ color: this.selectedOriginalColor ?? '#5a7ba6', weight: 4 });
 this.selectedElement.closePopup();
@@ -944,7 +979,7 @@ if (key === activeApiId) {
 if (this.callesLayer) {
 this.callesLayer.eachLayer((l: any) => {
 try {
-          (l as L.Polyline).setStyle({ opacity: activeApiId ? 0.05 : 0.9 });
+          (l as Polyline).setStyle({ opacity: activeApiId ? 0.05 : 0.9 });
         } catch(e) {}
       });
     }
@@ -1025,15 +1060,15 @@ const remainingCoords = [nearest.point, ...coords.slice(nearest.segmentIndex+1)]
 // reemplazar travelledLine y remainingLine en el mapa
 if (this.travelledLine) this.recorridoLayer.removeLayer(this.travelledLine);
 if (this.remainingLine) this.recorridoLayer.removeLayer(this.remainingLine);
-this.travelledLine = L.polyline(travelledCoords as any, { color: '#0000FF', weight: 6, opacity: 0.9 }).addTo(this.recorridoLayer);
-this.remainingLine = L.polyline(remainingCoords as any, { color: '#ff3333', weight: 6, opacity: 0.5, dashArray: '6,8' }).addTo(this.recorridoLayer);
+this.travelledLine = polyline(travelledCoords as any, { color: '#0000FF', weight: 6, opacity: 0.9 }).addTo(this.recorridoLayer);
+this.remainingLine = polyline(remainingCoords as any, { color: '#ff3333', weight: 6, opacity: 0.5, dashArray: '6,8' }).addTo(this.recorridoLayer);
 // Opcional: mover el marker del conductor al punto proyectado (si quieres "snap")
 if (this.markerConductor) {
 this.markerConductor.setLatLng(nearest.point);
 this.markerConductor.setRotationAngle(this.heading);
       } else {
-this.markerConductor = L.marker(nearest.point, {
-          icon: L.icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61155.png', iconSize: [28,28], iconAnchor: [14,28] }),
+this.markerConductor = marker(nearest.point, {
+          icon: icon({ iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61155.png', iconSize: [28,28], iconAnchor: [14,28] }),
           rotationAngle: this.heading
         }).addTo(this.recorridoLayer);
       }
@@ -1084,7 +1119,7 @@ this.watchPositionId = id;
 console.error('startRouteTracking error', e);
     }
   }
-// --- ADICION: detener tracking (llamar al finalizar recorrido)
+
 private stopRouteTracking() {
 // limpiar watch de ruta
 this.clearWatchGeneric(this.watchPositionId);
@@ -1106,21 +1141,21 @@ this.lastUpdateTime = 0;
 private loadUser() {
 const token = localStorage.getItem('token') || '';
 if (!token) return;
-// intentamos cargar usuario vía servicio
+
 this.userService.getUser(token).subscribe({
 next: (res) => {
 console.log('Usuario cargado en Tab1:', res);
 this.user = res;
-// además guardamos en localStorage por si otra parte espera ese valor
+
 try {
 localStorage.setItem('user', JSON.stringify(res));
-// si viene vehiculo_id sencillo, lo guardamos también
+
 if (res?.vehiculo_id) localStorage.setItem('vehiculo_id', res.vehiculo_id);
         } catch (e) {}
       },
 error: (err) => {
 console.warn('No se pudo cargar usuario en Tab1:', err);
-// fallback: intentar leer user desde localStorage si existe
+
 try {
 const raw = localStorage.getItem('user');
 if (raw) this.user = JSON.parse(raw);
@@ -1131,23 +1166,23 @@ if (raw) this.user = JSON.parse(raw);
 
 private getAssignedVehicleId(): string | null {
   try {
-    // 🚗 1️⃣ Primer intento: si el usuario tiene un array de vehículos
+
     if (this.user && Array.isArray(this.user.vehiculos) && this.user.vehiculos.length > 0) {
-      const vehiculo = this.user.vehiculos[0]; // puedes ajustar si quieres otro índice
+      const vehiculo = this.user.vehiculos[0]; 
       if (vehiculo.api_id) return vehiculo.api_id;
       if (vehiculo.id) return vehiculo.id;
     }
 
-    // 🚗 2️⃣ Si el usuario tiene un único vehículo directo
+
     if (this.user?.vehiculo) {
       if (this.user.vehiculo.api_id) return this.user.vehiculo.api_id;
       if (this.user.vehiculo.id) return this.user.vehiculo.id;
     }
 
-    // 🚗 3️⃣ Si el usuario tiene un campo vehiculo_id directo
+    
     if (this.user?.vehiculo_id) return this.user.vehiculo_id;
 
-    // 🚗 4️⃣ Revisar localStorage
+   
     const fromLs = localStorage.getItem('vehiculo_id');
     if (fromLs) return fromLs;
 
@@ -1155,7 +1190,7 @@ private getAssignedVehicleId(): string | null {
     console.warn('⚠️ getAssignedVehicleId error:', e);
   }
 
-  // 🚨 Fallback final
+
   const fallback = '0199d01b-d17c-736f-9ab7-4a045d22cb94';
   console.warn('⚠️ No se encontró vehículo asignado; usando fallback hardcodeado.');
   return fallback;

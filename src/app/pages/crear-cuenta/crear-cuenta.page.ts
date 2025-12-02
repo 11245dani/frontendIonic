@@ -2,21 +2,49 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { ToastController, IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+
+// 🔥 IMPORTS STANDALONE DE IONIC (sin IonicModule)
+import {
+  IonContent,
+  IonCard,
+  IonItem,
+  IonInput,
+  IonIcon,
+  IonButton,
+  IonText,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-crear-cuenta',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, RouterModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+
+    // Ionic standalone components usados en el HTML
+    IonContent,
+    IonCard,
+    IonItem,
+    IonInput,
+    IonIcon,
+    IonButton,
+    IonText,
+    IonSelect,
+    IonSelectOption
+  ],
   templateUrl: './crear-cuenta.page.html',
   styleUrls: ['./crear-cuenta.page.scss'],
 })
 export class CrearCuentaPage implements OnInit, OnDestroy {
+
   registerForm!: FormGroup;
   loading = false;
-  private apiUrl = 'http://localhost:8000/api/register';
+  private apiUrl = 'https://apidani.eleueleo.com/api/register';
   showPassword = false;
   showConfirmPassword = false;
 
@@ -38,12 +66,10 @@ export class CrearCuentaPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // 🧹 Se ejecuta al salir del tab o navegar a otro
     this.clearForm();
   }
 
   ionViewWillLeave() {
-    // 🧹 Por si el ciclo de vida Ionic se activa antes
     this.clearForm();
   }
 
