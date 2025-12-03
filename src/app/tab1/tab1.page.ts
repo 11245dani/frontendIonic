@@ -172,26 +172,24 @@ if (this.recorridoActivo) {
   }
 
 async ionViewDidEnter() {
-
-  // Esperamos que rutas y calles estén listas antes del mapa
+  // 1. Cargar datos
   await Promise.all([this.loadCalles(), this.loadRutas()]);
-
-  // Apagamos el loading para que el div del mapa EXISTE
   this.isPageLoading = false;
 
-  // Importante: dejar que Angular ponga el div en el DOM
-  setTimeout(async () => {
-    if (!this.map) {
-      await this.initMap();
-      this.drawCallesOnMap(this.calles);
-      this.drawRutasOnMap(this.rutas);
-      this.showCurrentPosition();
-    } else {
-      this.map.invalidateSize();
-    }
-  }, 200); // <-- 200ms garantiza que el DOM esté listo
-}
+  // 2. Inicializar mapa
+  if (!this.map) {
+    await this.initMap();
+    this.drawCallesOnMap(this.calles);
+    this.drawRutasOnMap(this.rutas);
+  } else {
+    this.map.invalidateSize();
+  }
 
+  // 3. ¡GPS AHORA SÍ! Después de que el mapa esté 100% listo
+  setTimeout(() => {
+    this.showCurrentPosition();  // ← AHORA SÍ funciona
+  }, 800); // 800ms es el tiempo mágico en Android real
+}
 
 private async loadActiveRecorrido() {
   const storedId = localStorage.getItem('activeRecorridoId');
@@ -435,78 +433,75 @@ if (!isNaN(numeric)) navigator.geolocation.clearWatch(numeric);
   }
 // Helper de notificaciones: intenta LocalNotifications y hace fallback a Web Notifications
 private async notify(title: string, body: string) {
-try {
-// intentar plugin
-if (!this.isWeb) {
-await LocalNotifications.schedule({
-          notifications: [{
-            id: Math.floor(Math.random() * 90000) + 10000,
-            title,
-            body,
-            schedule: { at: new Date(Date.now() + 1000) }
-          }]
-        });
-return;
-      }
-    } catch (e) {
-      console.warn('LocalNotifications error:', e);
-    }
-// fallback web
-try {
-if ('Notification' in window) {
-if (Notification.permission === 'granted') {
-new Notification(title, { body });
-        } else if (Notification.permission !== 'denied') {
-const p = await Notification.requestPermission();
-if (p === 'granted') new Notification(title, { body });
-        }
-      } else {
-        console.log('Notificación:', title, body);
-      }
-    } catch (e) {
-      console.warn('Web Notification fallback error:', e);
-    }
+  if (Capacitor.getPlatform() === 'android') {
+    await this.mostrarNotificacion(title, body); // unificar todo
+  } else {
+    // web fallback
+    alert(`${title}: ${body}`);
   }
+}
 // -------------------------
 // Fin wrappers
 // -------------------------
 async showCurrentPosition() {
-try {
-const allowed = await this.requestLocationPermission();
-if (!allowed) {
-        console.warn('Permisos de ubicación no concedidos');
-return;
-      }
-// obtener posición inicial
-const pos: any = await this.getCurrentPositionWrapper({ enableHighAccuracy: true, timeout: 15000 });
-const lat = pos.coords.latitude;
-const lng = pos.coords.longitude;
-console.log('Posición inicial:', { lat, lng, accuracy: pos.coords.accuracy });
-this.currentPosition = { lat, lng };
-this.setUserMarker(lat, lng, '📍 Estás aquí', true); // Centrar solo inicialmente
-// iniciar watch (guardamos id para limpiar)
-const id = await this.watchPositionWrapper(
-        (p) => {
-if (p && p.coords) {
-const plat = p.coords.latitude;
-const plng = p.coords.longitude;
-console.log('Posición actualizada:', { lat: plat, lng: plng, accuracy: p.coords.accuracy });
-this.currentPosition = { lat: plat, lng: plng };
-this.setUserMarker(plat, plng, '📍 Estás aquí', false); // No centrar automáticamente
-          }
-        },
-        (err) => {
-          console.error('Watch error:', err);
-        },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-      );
-this.watchId = id;
-// notificación de éxito (intento)
-await this.notify('Ubicación detectada', 'Posición actual registrada');
-    } catch (err) {
-      console.error('Error ubicación:', err);
+  console.log('Intentando obtener ubicación...');
+  try {
+    const allowed = await this.requestLocationPermission();
+    if (!allowed) {
+      this.mostrarNotificacion('Permiso requerido', 'Activa la ubicación en ajustes');
+      return;
     }
+
+    console.log('Permiso concedido, obteniendo posición...');
+
+    // Posición inicial
+    const pos: any = await this.getCurrentPositionWrapper({ 
+      enableHighAccuracy: true,
+      timeout: 20000,     // más tiempo
+      maximumAge: 0
+    });
+
+    console.log('¡POSICIÓN OBTENIDA!', pos.coords);
+    
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+
+    this.currentPosition = { lat, lng };
+    this.setUserMarker(lat, lng, '📍 Estás aquí', true); // centrar solo la primera vez
+
+    // LIMPIAR watch anterior si existe
+    if (this.watchId) {
+      await this.clearWatchGeneric(this.watchId);
+    }
+
+    // NUEVO: watchPosition que SIEMPRE actualiza (con o sin ruta)
+    const id = await this.watchPositionWrapper(
+      (position) => {
+        if (!position?.coords) return;
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        this.currentPosition = { lat, lng };
+
+        // Actualizar siempre el marcador azul
+        this.setUserMarker(lat, lng, '📍 Estás aquí', false);
+
+        // Si hay recorrido activo → también actualizar el seguimiento avanzado
+        if (this.recorridoActivo && this.selectedRuta) {
+          this.handlePositionUpdate(position);
+        }
+      },
+      (err) => console.error('Error GPS general:', err),
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+    );
+
+    this.watchId = id;
+
+  } catch (err) {
+    console.error('Error iniciando ubicación:', err);
+    this.mostrarNotificacion('Error GPS', 'No se pudo obtener tu ubicación');
   }
+}
 private setUserMarker(lat: number, lng: number, popup: string, center: boolean = false) {
 if (!this.map) return;
 if (!this.userMarker) {
@@ -545,6 +540,7 @@ this.drawCallesOnMap(this.calles);
 private drawCallesOnMap(calles: any[]) {
 if (!this.map) return;
 this.callesLayer.clearLayers();
+if (!Array.isArray(calles)) return;
     calles.forEach(calle => {
 try {
 const shape = JSON.parse(calle.shape);
@@ -654,33 +650,55 @@ this.mostrarRutas ? this.map.addLayer(this.rutasLayer) : this.map.removeLayer(th
 async mostrarNotificacion(titulo: string, mensaje: string) {
   const plataforma = Capacitor.getPlatform();
 
-  if (plataforma === 'web') {
-    // ⚠️ Modo desarrollo en navegador
-    if (window.location.hostname === 'localhost') {
-      console.log(`[DESARROLLO] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
-      alert(`${titulo}: ${mensaje}`); // opcional solo mientras desarrollas
-    } else {
-      // Web en producción (sin alert)
-      console.log(`[WEB] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
-    }
-  } else if (plataforma === 'android' || plataforma === 'ios') {
-    // ⚡ Dispositivo móvil real
+  if (plataforma === 'android') {
     try {
+      // 1. Verificar y solicitar permiso de notificaciones
+      let permiso = await LocalNotifications.checkPermissions();
+      if (permiso.display !== 'granted') {
+        permiso = await LocalNotifications.requestPermissions();
+      }
+      if (permiso.display !== 'granted') {
+        console.warn('Permiso de notificaciones denegado por el usuario');
+        return;
+      }
+
+      // 2. Crear canal de notificación (solo necesario una vez)
+      await LocalNotifications.createChannel({
+        id: 'recorridos_channel',
+        name: 'Recorridos Activos',
+        importance: 5,                    // IMPORTANCIA MÁXIMA
+        visibility: 1,                     // Público (se ve en pantalla bloqueada)
+        lights: true,
+        vibration: true,
+        sound: 'default',                  // Aquí va el sonido del canal (string!)
+        // Puedes usar un sonido personalizado: 'notification_sound.wav'
+      });
+
+      // 3. Enviar la notificación
       await LocalNotifications.schedule({
         notifications: [
           {
+            id: Math.floor(Math.random() * 2_000_000_000) + 1,  // ← ESTO
             title: titulo,
             body: mensaje,
-            id: new Date().getTime(), // ID único
+            channelId: 'recorridos_channel',  
+            sound: 'default',                 
+            smallIcon: 'ic_stat_name',        
+            ongoing: false,
+            autoCancel: true,
           }
         ]
       });
+
+      console.log('Notificación enviada:', titulo, mensaje);
+
     } catch (err) {
-      console.error('❌ Error al mostrar notificación nativa:', err);
+      console.error('Error al enviar notificación:', err);
     }
-  } else {
-    // Otros casos (fallback)
-    console.log(`[FALLBACK] NOTIFICACIÓN: ${titulo} - ${mensaje}`);
+  } 
+  else if (plataforma === 'web') {
+    console.log(`[WEB] Notificación: ${titulo} - ${mensaje}`);
+
   }
 }
 
@@ -1081,44 +1099,13 @@ this.markerConductor = marker(nearest.point, {
   }
 // --- ADICION: iniciar seguimiento GPS real (llamar desde iniciarRecorrido)
 private async startRouteTracking() {
-// primero seteamos visual de ruta activa
-if (!this.selectedRuta) {
-      console.warn('startRouteTracking: no hay ruta seleccionada');
-return;
-    }
-const routeKey = this.selectedRuta.api_id ?? String(this.selectedRuta.id);
-this.setActiveRouteVisual(routeKey);
-// obtener posicion inicial antes de empezar watch (mejor UX)
-try {
-const allowed = await this.requestLocationPermission();
-if (!allowed) {
-alert('Permiso de ubicación denegado');
-return;
-      }
-    } catch (e) {
-      console.warn('requestPermissions error', e);
-    }
-try {
-const pos: any = await this.getCurrentPositionWrapper({ enableHighAccuracy: true, timeout: 15000 });
-// posicion inicial
-await this.handlePositionUpdate({ coords: { latitude: pos.coords.latitude, longitude: pos.coords.longitude, accuracy: pos.coords.accuracy } });
-// watch
-const id = await this.watchPositionWrapper(
-        (position) => {
-if (position && position.coords) {
-this.handlePositionUpdate(position);
-          }
-        },
-        (err) => {
-console.error('Geolocation watch error', err);
-        },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-      );
-this.watchPositionId = id;
-    } catch (e) {
-console.error('startRouteTracking error', e);
-    }
-  }
+  if (!this.selectedRuta) return;
+
+  const routeKey = this.selectedRuta.api_id ?? String(this.selectedRuta.id);
+  this.setActiveRouteVisual(routeKey);
+
+  this.mostrarNotificacion('Seguimiento activo', 'Estás siendo monitoreado en la ruta');
+}
 
 private stopRouteTracking() {
 // limpiar watch de ruta
