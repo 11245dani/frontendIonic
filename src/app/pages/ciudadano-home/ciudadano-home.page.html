@@ -1,23 +1,39 @@
 <ion-app>
-  <!-- === MENU LATERAL === -->
-  <!--<app-menu-ciudadano contentId="main-content"></app-menu-ciudadano>-->
-  <!-- === CONTENIDO PRINCIPAL === -->
   <div class="ion-page" id="main-content">
-    <ion-header>
-      <ion-toolbar color="success">
+    <ion-header class="custom-header">
+      <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button menu="menu-ciudadano"></ion-menu-button>
         </ion-buttons>
-        <ion-title>Bienvenido Ciudadano</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="logout()">
-            <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
-          </ion-button>
-        </ion-buttons>
+        <ion-title>Recorridos en Tiempo Real</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-      <div id="map" style="height: 100%; width: 100%;"></div>
+
+    <ion-content class="map-content">
+      <!-- Mapa -->
+      <div id="map" class="map-container"></div>
+
+      <!-- Tarjeta con la lista de recorridos activos -->
+      <ion-card class="active-recorridos-card">
+        <ion-card-header>
+          <ion-card-title>Recorridos Activos</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="recorridosUI.length === 0" class="no-recorridos">
+            <p>No hay recorridos activos en este momento.</p>
+          </div>
+
+          <ion-list *ngIf="recorridosUI.length > 0">
+            <ion-item *ngFor="let rec of recorridosUI" (click)="centerOnRecorrido(rec.id)" button detail="false">
+              <ion-label>
+                <h2>{{ rec.nombreRuta }}</h2>
+                <ion-progress-bar [value]="rec.progreso / 100" color="success"></ion-progress-bar>
+                <p>{{ rec.progreso.toFixed(0) }}% completado</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
     </ion-content>
   </div>
 </ion-app>

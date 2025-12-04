@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
     {
   path: 'crear-cuenta',
-  loadComponent: () => 
+  loadComponent: () =>
     import('./pages/crear-cuenta/crear-cuenta.page').then(m => m.CrearCuentaPage)
 },
   {

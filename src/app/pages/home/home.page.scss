@@ -23,7 +23,10 @@
   height: 120px;
   margin-bottom: 1.5rem;
   animation: fadeIn 1s ease-in;
-  position: center;
+  // Correct way to center an image
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @keyframes fadeIn {
@@ -69,6 +72,7 @@
   margin-top: 1.5rem;
   font-size: 16px;
   transition: color 0.3s ease;
+  text-align: center; // Center the text
 }
 
 .create-account:hover {

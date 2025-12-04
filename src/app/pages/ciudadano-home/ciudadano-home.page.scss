@@ -1,50 +1,89 @@
-ion-menu::part(backdrop) {
-  background-color: rgba(255, 0, 255, 0.5);
-}
+ion-header.custom-header {
+  --background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
-ion-menu::part(container) {
-  border-radius: 0 20px 20px 0;
-  box-shadow: 4px 0px 16px rgba(255, 0, 255, 0.18);
-}
-
-.fade-in {
-  animation: fadeIn 0.6s ease both;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
+  ion-toolbar {
+    --background: #ffffff !important;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  ion-title {
+    color: #000000 !important;
+  }
+
+  ion-buttons {
+    ion-button, ion-menu-button {
+      --color: #000000 !important;
+    }
   }
 }
 
-.welcome-card {
-  text-align: center;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 25px;
-  margin-top: 60px;
+ion-content.map-content {
+  position: relative;
+  --background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
 }
 
-.welcome-card h2 {
-  color: #198754;
-  font-weight: 700;
-  margin-bottom: 10px;
+#map {
+  height: 60%;
+  width: 100%;
 }
 
-.welcome-card p {
-  color: #555;
-  font-size: 15px;
-  margin-bottom: 25px;
+.leaflet-control-custom {
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.action-button {
-  margin-top: 10px;
-  border-radius: 12px;
-  font-weight: 600;
+.logout-control svg {
+    stroke: #d32f2f;
+}
+
+.active-recorridos-card {
+  margin: 0;
+  border-radius: 20px 20px 0 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  ion-card-header {
+    padding-bottom: 8px;
+  }
+
+  ion-card-content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .no-recorridos {
+    text-align: center;
+    padding-top: 20px;
+    color: #888;
+  }
+
+  ion-list {
+    padding-top: 0;
+  }
+
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    h2 {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 0.9em;
+      color: #555;
+    }
+  }
 }

@@ -1,0 +1,34 @@
+.header-publico {
+  --background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-app {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #000;
+}
+
+.map-container {
+  height: 100%;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+
+.loading-map {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+  background-color: #f7fff9;
+}
+
+.loading-text {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  color: #555;
+}

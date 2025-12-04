@@ -1,0 +1,14 @@
+<ion-header class="header-publico">
+  <ion-toolbar>
+    <ion-title class="titulo-app">Mapa de Recorridos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" class="loading-map">
+    <ion-spinner name="crescent" color="success"></ion-spinner>
+    <p class="loading-text">Cargando mapa y rutas...</p>
+  </div>
+
+  <div id="mapa-publico" class="map-container" [hidden]="isLoading"></div>
+</ion-content>
